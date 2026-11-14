@@ -1,0 +1,2745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#050811">
+    <title>HKFin.app — Hong Kong Personal Wealth OS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&family=JetBrains+Mono:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+        h1, h2, h3, .font-display {
+            font-family: 'Plus Jakarta Sans', 'Inter', 'Noto Sans TC', 'Noto Sans SC', sans-serif;
+        }
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.02em;
+        }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+        .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 999px; }
+        .dark ::-webkit-scrollbar-thumb { background: rgba(71, 85, 105, 0.45); }
+
+        /* Cinematic Aurora Landing */
+        .aurora-bg {
+            background-color: #040710;
+            background-image:
+                radial-gradient(ellipse 85% 55% at 50% -12%, rgba(16, 185, 129, 0.24), transparent),
+                radial-gradient(ellipse 65% 50% at 88% 22%, rgba(14, 165, 233, 0.18), transparent),
+                radial-gradient(ellipse 60% 55% at 12% 78%, rgba(99, 102, 241, 0.16), transparent);
+        }
+        .grid-pattern {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+        .hero-mockup-glow {
+            box-shadow: 0 30px 90px -20px rgba(16, 185, 129, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.12);
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        .animate-float { animation: floatSlow 5s ease-in-out infinite; }
+        .animate-float-delay { animation: floatSlow 6s ease-in-out 1.5s infinite; }
+
+        /* Editorial Surface Cards */
+        .surface-card {
+            background: #ffffff;
+            border: 1px solid rgba(226, 232, 240, 0.92);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03), 0 8px 24px -12px rgba(15, 23, 42, 0.06);
+        }
+        .dark .surface-card {
+            background: #0C111E;
+            border: 1px solid rgba(30, 41, 59, 0.92);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 12px 32px -12px rgba(0, 0, 0, 0.6);
+        }
+        .card-hover {
+            transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.22s ease, border-color 0.22s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            border-color: rgba(16, 185, 129, 0.38);
+            box-shadow: 0 14px 30px -10px rgba(15, 23, 42, 0.08);
+        }
+        .dark .card-hover:hover {
+            border-color: rgba(52, 211, 153, 0.32);
+            box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.65);
+        }
+
+        /* Executive Wealth Banner */
+        .hero-wealth-card {
+            background: linear-gradient(135deg, #080C17 0%, #0E172A 52%, #062824 100%);
+            box-shadow: 0 24px 48px -18px rgba(6, 78, 59, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #34d399 0%, #38bdf8 55%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Sidebar Navigation */
+        .nav-active {
+            background: #0F172A;
+            color: #ffffff;
+            box-shadow: 0 6px 16px -4px rgba(15, 23, 42, 0.28);
+        }
+        .dark .nav-active {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(14, 165, 233, 0.14) 100%);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.28);
+            box-shadow: 0 6px 20px -6px rgba(16, 185, 129, 0.25);
+        }
+
+        .fade-up { animation: fadeUp 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        button, .btn-press {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease, border-color 0.18s ease;
+            user-select: none;
+        }
+        button:active, .btn-press:active { transform: scale(0.96); }
+        .btn-ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: rippleWave 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            background: rgba(255, 255, 255, 0.28);
+            pointer-events: none;
+        }
+        @keyframes rippleWave { to { transform: scale(3.5); opacity: 0; } }
+
+        .loader-ring {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 3px solid rgba(52, 211, 153, 0.15);
+            border-top-color: #34d399;
+            border-right-color: #38bdf8;
+            animation: spinRing 0.75s linear infinite;
+        }
+        @keyframes spinRing { to { transform: rotate(360deg); } }
+
+        body.is-mobile .desktop-only { display: none !important; }
+        body.is-mobile #mobile-bottom-nav { display: flex !important; }
+        body.is-mobile #main-scroll { padding: 14px 14px 104px 14px; }
+        body.is-mobile input, body.is-mobile select { font-size: 16px !important; }
+    </style>
+</head>
+<body class="bg-[#F5F7FB] dark:bg-[#050811] text-slate-900 dark:text-slate-100 h-screen overflow-hidden flex flex-col selection:bg-emerald-500 selection:text-white transition-colors duration-200">
+
+    <!-- ==================== CINEMATIC LANDING PAGE ==================== -->
+    <div id="landing-page" class="fixed inset-0 z-50 aurora-bg grid-pattern text-white overflow-y-auto flex flex-col pt-safe pb-safe">
+        <!-- Top Navigation Bar -->
+        <header class="sticky top-0 z-30 bg-[#040710]/75 backdrop-blur-xl border-b border-white/[0.07]">
+            <div class="max-w-7xl w-full mx-auto px-5 sm:px-8 py-4 flex justify-between items-center gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-400 via-teal-500 to-sky-500 flex items-center justify-center shadow-lg shadow-emerald-500/25 ring-1 ring-white/30">
+                        <i class="fa-solid fa-compass text-base text-slate-950"></i>
+                    </div>
+                    <div class="flex items-center gap-2.5">
+                        <span class="font-display text-xl font-extrabold tracking-tight">HKFin<span class="text-emerald-400">.app</span></span>
+                        <span id="device-mode-badge" class="text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-white/[0.08] text-emerald-300 border border-white/10">Wealth OS</span>
+                    </div>
+                </div>
+
+                <div class="hidden md:flex items-center gap-7 text-xs font-semibold text-slate-300">
+                    <a href="#features-grid" class="hover:text-white transition" data-i18n="nav_feat_link">Capabilities</a>
+                    <a href="#hk-suite-section" class="hover:text-white transition" data-i18n="nav_hk_link">HK Tax & Property</a>
+                    <a href="#security-section" class="hover:text-white transition" data-i18n="nav_sync_link">Google Cloud Sync</a>
+                </div>
+
+                <div class="flex items-center gap-2.5">
+                    <select id="landing-lang-select" aria-label="Language" class="bg-white/[0.07] hover:bg-white/[0.12] border border-white/15 text-white text-xs font-semibold rounded-xl px-3 py-2 outline-none cursor-pointer backdrop-blur-md transition">
+                        <option value="en" class="text-slate-900">EN</option>
+                        <option value="zh-HK" class="text-slate-900">繁體中文</option>
+                        <option value="zh-CN" class="text-slate-900">简体中文</option>
+                    </select>
+                    <button id="btn-login-top" class="px-4 py-2 rounded-xl bg-white text-slate-950 hover:bg-emerald-300 text-xs sm:text-sm font-extrabold flex items-center gap-2 shadow-lg transition">
+                        <i class="fa-brands fa-google text-emerald-600"></i> <span data-i18n="sign_in">Sign In</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section with Interactive Wealth Terminal Preview -->
+        <main class="flex-1 max-w-7xl w-full mx-auto px-5 sm:px-8 py-12 lg:py-16 space-y-20">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <!-- Left Copy & CTA -->
+                <div class="lg:col-span-6 text-left space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-400/25 text-emerald-300 text-[11px] font-bold uppercase tracking-widest">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span data-i18n="hero_badge">Zero-Latency Mobile & Desktop Cloud Sync</span>
+                    </div>
+
+                    <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.06]">
+                        <span data-i18n="hero_title_1">Your Complete</span> <span class="gradient-text" data-i18n="hero_title_hk">Hong Kong</span> <span data-i18n="hero_title_2">Financial Command Center</span>
+                    </h1>
+
+                    <p data-i18n="hero_desc" class="text-slate-300/90 text-sm sm:text-base lg:text-lg font-normal leading-relaxed max-w-xl">
+                        Track HKD cashflow, Octopus & bank wallets, recurring bills, Salaries Tax, Stamp Duty, and MPF growth—saved permanently to your Google account across desktop and mobile.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
+                        <button id="btn-login-main" class="px-7 py-4 rounded-2xl bg-gradient-to-r from-emerald-400 via-teal-400 to-sky-400 hover:brightness-105 text-slate-950 font-extrabold text-sm sm:text-base shadow-2xl shadow-emerald-500/25 flex items-center justify-center gap-3 ring-1 ring-white/40">
+                            <i class="fa-brands fa-google text-lg"></i> <span data-i18n="continue_google">Continue with Google</span>
+                        </button>
+                        <a href="#features-grid" class="px-6 py-4 rounded-2xl bg-white/[0.06] hover:bg-white/[0.11] border border-white/15 text-white text-sm font-bold flex items-center justify-center gap-2 transition">
+                            <span data-i18n="explore_features">Explore Wealth OS</span> <i class="fa-solid fa-arrow-down text-xs text-emerald-400"></i>
+                        </a>
+                    </div>
+
+                    <!-- Trust Metrics Strip -->
+                    <div class="grid grid-cols-3 gap-4 pt-4 border-t border-white/10 max-w-lg">
+                        <div>
+                            <div class="font-mono text-lg sm:text-xl font-extrabold text-white">5 Wallets</div>
+                            <div class="text-[11px] text-slate-400" data-i18n="trust_1">Bank, Octopus, FPS</div>
+                        </div>
+                        <div>
+                            <div class="font-mono text-lg sm:text-xl font-extrabold text-emerald-400">&lt; 15ms</div>
+                            <div class="text-[11px] text-slate-400" data-i18n="trust_2">Local Edge Cache</div>
+                        </div>
+                        <div>
+                            <div class="font-mono text-lg sm:text-xl font-extrabold text-sky-400">HKD / Tax</div>
+                            <div class="text-[11px] text-slate-400" data-i18n="trust_3">IRD & MPF Built-in</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Live Interactive Dashboard Preview Card -->
+                <div class="lg:col-span-6 relative">
+                    <div class="absolute -inset-4 bg-gradient-to-r from-emerald-500/20 via-sky-500/20 to-indigo-500/20 rounded-[36px] blur-2xl pointer-events-none"></div>
+
+                    <!-- Floating Top-Right Badge -->
+                    <div class="hidden sm:flex animate-float absolute -top-5 -right-3 z-20 bg-[#0D1424]/95 backdrop-blur-xl border border-emerald-400/30 px-4 py-2.5 rounded-2xl shadow-2xl items-center gap-2.5">
+                        <span class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-arrow-trend-up text-xs"></i></span>
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Weekly Savings Rate</div>
+                            <div class="mono text-xs font-extrabold text-emerald-400">+42.8% Optimal</div>
+                        </div>
+                    </div>
+
+                    <!-- Floating Bottom-Left Badge -->
+                    <div class="hidden sm:flex animate-float-delay absolute -bottom-5 -left-4 z-20 bg-[#0D1424]/95 backdrop-blur-xl border border-sky-400/30 px-4 py-2.5 rounded-2xl shadow-2xl items-center gap-2.5">
+                        <span class="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center"><i class="fa-solid fa-landmark text-xs"></i></span>
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">2026 IRD Tax Reserve</div>
+                            <div class="mono text-xs font-extrabold text-white">HK$ 1,850 / mo</div>
+                        </div>
+                    </div>
+
+                    <!-- Preview Terminal Window -->
+                    <div class="relative bg-[#0B101D]/95 backdrop-blur-2xl rounded-3xl p-5 sm:p-6 hero-mockup-glow space-y-5">
+                        <div class="flex items-center justify-between border-b border-white/10 pb-3.5">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-rose-500/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-amber-400/80"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400/80"></span>
+                                <span class="ml-2 text-[11px] font-mono text-slate-400">hkfin.app — live wealth terminal</span>
+                            </div>
+                            <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/25">● Cloud Synced</span>
+                        </div>
+
+                        <!-- Simulated Net Balance -->
+                        <div class="p-4 rounded-2xl bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/10">
+                            <div class="flex justify-between items-center text-[11px] text-slate-400 font-bold uppercase tracking-wider">
+                                <span>Total Liquid Net Worth</span>
+                                <span class="text-emerald-400 mono">+HK$ 18,450 this mo</span>
+                            </div>
+                            <div class="mono text-3xl sm:text-4xl font-extrabold text-white mt-1">HK$ 348,920.50</div>
+                            <div class="grid grid-cols-3 gap-2 mt-4">
+                                <div class="p-2.5 rounded-xl bg-black/30 border border-white/5">
+                                    <div class="text-[10px] text-slate-400">🏦 HSBC Bank</div>
+                                    <div class="mono text-xs font-bold text-white mt-0.5">HK$ 312,400</div>
+                                </div>
+                                <div class="p-2.5 rounded-xl bg-black/30 border border-white/5">
+                                    <div class="text-[10px] text-slate-400">🐙 Octopus</div>
+                                    <div class="mono text-xs font-bold text-emerald-400 mt-0.5">HK$ 1,420</div>
+                                </div>
+                                <div class="p-2.5 rounded-xl bg-black/30 border border-white/5">
+                                    <div class="text-[10px] text-slate-400">📱 PayMe / FPS</div>
+                                    <div class="mono text-xs font-bold text-sky-400 mt-0.5">HK$ 35,100</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Simulated Recent Entries -->
+                        <div class="space-y-2">
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Live Ledger Stream</div>
+                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs"><i class="fa-solid fa-arrow-up"></i></span>
+                                    <div>
+                                        <div class="text-xs font-bold text-white">Monthly Tech Salary</div>
+                                        <div class="text-[10px] text-slate-400">HSBC Bank • Salary & Bonus</div>
+                                    </div>
+                                </div>
+                                <span class="mono text-xs font-extrabold text-emerald-400">+HK$ 48,000.00</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.03] border border-white/5">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="w-7 h-7 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center text-xs"><i class="fa-solid fa-train-subway"></i></span>
+                                    <div>
+                                        <div class="text-xs font-bold text-white">MTR & Airport Express</div>
+                                        <div class="text-[10px] text-slate-400">Octopus • Transport</div>
+                                    </div>
+                                </div>
+                                <span class="mono text-xs font-extrabold text-rose-400">-HK$ 115.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Grid -->
+            <div id="features-grid" class="space-y-6 pt-4">
+                <div class="text-center max-w-2xl mx-auto space-y-2">
+                    <div class="text-[11px] font-bold uppercase tracking-widest text-emerald-400" data-i18n="landing_sec_tag">BUILT FOR HONG KONG</div>
+                    <h2 class="font-display text-2xl sm:text-4xl font-extrabold tracking-tight" data-i18n="landing_sec_title">Everything Your Bank App Misses</h2>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
+                    <div class="bg-white/[0.04] hover:bg-white/[0.07] backdrop-blur-xl border border-white/10 p-6 rounded-3xl transition">
+                        <div class="w-11 h-11 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center mb-4 border border-emerald-400/20"><i class="fa-solid fa-wallet"></i></div>
+                        <h3 data-i18n="feat_1_t" class="font-display font-bold text-base mb-1.5 text-white">Multi-Wallet & Transfers</h3>
+                        <p data-i18n="feat_1_d" class="text-xs text-slate-400 leading-relaxed">Track HSBC/Bank, Octopus, Credit Card, PayMe/FPS, and Cash balances with 1-click top-up transfers.</p>
+                    </div>
+                    <div class="bg-white/[0.04] hover:bg-white/[0.07] backdrop-blur-xl border border-white/10 p-6 rounded-3xl transition">
+                        <div class="w-11 h-11 rounded-2xl bg-sky-500/15 text-sky-400 flex items-center justify-center mb-4 border border-sky-400/20"><i class="fa-solid fa-calendar-week"></i></div>
+                        <h3 data-i18n="feat_2_t" class="font-display font-bold text-base mb-1.5 text-white">Daily to Yearly Analytics</h3>
+                        <p data-i18n="feat_2_d" class="text-xs text-slate-400 leading-relaxed">Switch instantly between Daily, Weekly, Monthly, and Yearly cashflow trends and scaled budget caps.</p>
+                    </div>
+                    <div id="hk-suite-section" class="bg-white/[0.04] hover:bg-white/[0.07] backdrop-blur-xl border border-white/10 p-6 rounded-3xl transition">
+                        <div class="w-11 h-11 rounded-2xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center mb-4 border border-indigo-400/20"><i class="fa-solid fa-landmark"></i></div>
+                        <h3 data-i18n="feat_3_t" class="font-display font-bold text-base mb-1.5 text-white">HK Tax, MPF & Property</h3>
+                        <p data-i18n="feat_3_d" class="text-xs text-slate-400 leading-relaxed">Calculate Salaries Tax (Progressive vs Standard), MPF compounding, and HK Mortgage + Stamp Duty.</p>
+                    </div>
+                    <div id="security-section" class="bg-white/[0.04] hover:bg-white/[0.07] backdrop-blur-xl border border-white/10 p-6 rounded-3xl transition">
+                        <div class="w-11 h-11 rounded-2xl bg-amber-500/15 text-amber-400 flex items-center justify-center mb-4 border border-amber-400/20"><i class="fa-solid fa-bolt"></i></div>
+                        <h3 data-i18n="feat_4_t" class="font-display font-bold text-base mb-1.5 text-white">Instant Google Sync & ⌘K</h3>
+                        <p data-i18n="feat_4_d" class="text-xs text-slate-400 leading-relaxed">Offline-first IndexedDB persistence + Google Cloud sync, CSV import/export, and keyboard shortcuts.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ==================== MAIN APP SHELL ==================== -->
+    <div id="app-container" class="hidden flex-1 flex h-full w-full overflow-hidden">
+
+        <!-- DESKTOP SIDEBAR -->
+        <aside id="desktop-sidebar" class="desktop-only hidden md:flex w-[268px] bg-white dark:bg-[#090D18] border-r border-slate-200/80 dark:border-slate-800/80 flex-col justify-between p-4 z-20 transition-colors">
+            <div>
+                <div class="flex items-center justify-between px-2.5 py-2 mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 via-teal-500 to-sky-500 flex items-center justify-center text-slate-950 shadow-md shadow-emerald-500/20">
+                            <i class="fa-solid fa-compass text-sm"></i>
+                        </div>
+                        <div>
+                            <div class="font-display font-extrabold text-base text-slate-900 dark:text-white tracking-tight leading-none">HKFin<span class="text-emerald-600 dark:text-emerald-400">.app</span></div>
+                            <div data-i18n="workspace_label" class="text-[10px] font-bold tracking-widest text-slate-400 mt-1">WEALTH WORKSPACE</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Command Palette Trigger -->
+                <button onclick="openCommandPalette()" class="w-full mb-5 px-3 py-2 rounded-xl bg-slate-100/90 dark:bg-slate-900 hover:bg-slate-200/70 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                    <span class="flex items-center gap-2"><i class="fa-solid fa-magnifying-glass text-[11px]"></i> <span data-i18n="quick_cmd">Quick Actions...</span></span>
+                    <kbd class="px-1.5 py-0.5 text-[10px] font-mono font-bold bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700">⌘K</kbd>
+                </button>
+
+                <nav class="space-y-1">
+                    <button data-tab="overview" class="nav-btn nav-active w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] font-semibold">
+                        <i class="fa-solid fa-chart-pie w-4 text-center"></i> <span data-i18n="nav_overview">Overview</span>
+                    </button>
+                    <button data-tab="ledger" class="nav-btn text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] font-semibold">
+                        <i class="fa-solid fa-receipt w-4 text-center"></i> <span data-i18n="nav_ledger">Transactions & CSV</span>
+                    </button>
+                    <button data-tab="planning" class="nav-btn text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] font-semibold">
+                        <i class="fa-solid fa-bullseye w-4 text-center"></i> <span data-i18n="nav_planning">Budgets, Goals & Bills</span>
+                    </button>
+                    <button data-tab="hktools" class="nav-btn text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] font-semibold">
+                        <i class="fa-solid fa-landmark w-4 text-center"></i> <span data-i18n="nav_hktools">HK Tax, MPF & Property</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="space-y-3">
+                <div class="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span data-i18n="theme_label" class="text-[10px] font-bold tracking-wider text-slate-400">APPEARANCE</span>
+                        <button id="btn-theme-desktop" class="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 shadow-2xs">
+                            <i id="theme-icon-desktop" class="fa-solid fa-moon text-indigo-500"></i>
+                            <span id="theme-text-desktop" data-i18n="dark_mode">Dark</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span data-i18n="lang_label" class="text-[10px] font-bold tracking-wider text-slate-400">LANGUAGE</span>
+                        <select id="lang-select-desktop" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 outline-none">
+                            <option value="en">English</option>
+                            <option value="zh-HK">繁體中文 (香港)</option>
+                            <option value="zh-CN">简体中文</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="px-3.5 py-2.5 rounded-2xl bg-emerald-500/[0.06] dark:bg-emerald-500/[0.08] border border-emerald-500/20">
+                    <div class="flex items-center justify-between text-[11px] font-bold text-slate-600 dark:text-slate-300">
+                        <span data-i18n="sync_status">SYNC STATUS</span>
+                        <span id="sync-indicator" class="text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> <span data-i18n="saved">Synced</span></span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-900 dark:bg-slate-900 text-white border border-slate-800">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <img id="user-avatar" src="" alt="" class="w-8 h-8 rounded-full hidden object-cover ring-2 ring-emerald-400/40">
+                        <div class="min-w-0">
+                            <div id="user-display" class="text-xs font-bold truncate">Account</div>
+                            <div id="user-email" class="text-[10px] text-slate-400 truncate">Synced</div>
+                        </div>
+                    </div>
+                    <button id="btn-logout" title="Sign Out" class="p-2 text-slate-400 hover:text-rose-400 rounded-xl">
+                        <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN WORKSPACE -->
+        <div class="flex-1 flex flex-col h-full overflow-hidden">
+            <!-- Top Header -->
+            <header class="bg-white/85 dark:bg-[#090D18]/85 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 px-4 md:px-8 py-3.5 flex justify-between items-center z-10 pt-safe transition-colors">
+                <div class="flex items-center gap-3">
+                    <div class="md:hidden w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 via-teal-500 to-sky-500 flex items-center justify-center text-slate-950 shadow-sm">
+                        <i class="fa-solid fa-compass text-xs"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 id="page-title" class="font-display text-base md:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">Overview</h1>
+                            <span id="mobile-sync-dot" class="md:hidden w-2 h-2 rounded-full bg-emerald-500" title="Synced"></span>
+                        </div>
+                        <p id="page-subtitle" class="desktop-only hidden md:block text-xs text-slate-500 dark:text-slate-400">Real-time Hong Kong Dollar cashflow, wallets & wealth analytics</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button onclick="openTransferModal()" title="Transfer Between Wallets" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200/70 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700 text-xs font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrow-right-arrow-left text-sky-500"></i> <span class="hidden sm:inline" data-i18n="transfer_btn">Transfer</span>
+                    </button>
+                    <select id="lang-select-header" aria-label="Language" class="md:hidden bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl px-2.5 py-1.5 text-xs font-bold outline-none">
+                        <option value="en">EN</option>
+                        <option value="zh-HK">繁中</option>
+                        <option value="zh-CN">简中</option>
+                    </select>
+                    <button id="btn-theme-header" title="Toggle Dark Mode" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-amber-400 border border-slate-200/80 dark:border-slate-700 text-xs">
+                        <i id="theme-icon-header" class="fa-solid fa-moon"></i>
+                    </button>
+                    <button onclick="openMobileQuickAdd('expense')" class="px-3.5 py-2 md:px-4 md:py-2.5 rounded-xl bg-slate-900 dark:bg-emerald-500 hover:brightness-110 text-white dark:text-slate-950 text-xs font-extrabold shadow-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i> <span data-i18n="add_entry">Add Entry</span>
+                    </button>
+                    <button id="btn-logout-mobile" class="md:hidden p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-rose-500 text-xs">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Scrollable Content Container -->
+            <div id="main-scroll" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 pb-28 md:pb-8 max-w-7xl w-full mx-auto">
+
+                <!-- ==================== TAB 1: OVERVIEW ==================== -->
+                <section id="tab-overview" class="tab-view space-y-6 fade-up">
+                    <!-- Timeframe Switcher with Active Date Range Pill -->
+                    <div class="surface-card p-2.5 rounded-2xl flex flex-wrap items-center justify-between gap-2.5">
+                        <div class="flex items-center gap-2.5 px-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span data-i18n="period_label" class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Timeframe</span>
+                            <span id="active-period-range" class="text-[11px] font-bold mono px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/70 dark:border-slate-700/70">--</span>
+                        </div>
+                        <div class="grid grid-cols-4 gap-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl flex-1 sm:flex-initial sm:min-w-[350px] border border-slate-200/60 dark:border-slate-800">
+                            <button type="button" data-period="daily" class="period-btn py-1.5 px-3 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400" data-i18n="period_daily">Daily</button>
+                            <button type="button" data-period="weekly" class="period-btn py-1.5 px-3 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400" data-i18n="period_weekly">Weekly</button>
+                            <button type="button" data-period="monthly" class="period-btn py-1.5 px-3 rounded-lg text-xs font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs" data-i18n="period_monthly">Monthly</button>
+                            <button type="button" data-period="yearly" class="period-btn py-1.5 px-3 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400" data-i18n="period_yearly">Yearly</button>
+                        </div>
+                    </div>
+
+                    <!-- Hero Net Worth & Dual-Target Banner -->
+                    <div class="hero-wealth-card text-white p-6 md:p-8 rounded-3xl border border-white/10 relative overflow-hidden">
+                        <div class="absolute -right-14 -top-14 w-64 h-64 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none"></div>
+                        <div class="absolute right-28 -bottom-20 w-56 h-56 rounded-full bg-sky-500/15 blur-3xl pointer-events-none"></div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center relative z-10">
+                            <div class="lg:col-span-6 space-y-2.5">
+                                <div class="flex items-center gap-2.5">
+                                    <span data-i18n="net_balance" class="text-[11px] font-bold uppercase tracking-widest text-slate-400">Net Cash Balance</span>
+                                    <span id="hero-savings-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/25">0.0% Saved</span>
+                                </div>
+                                <div id="hero-balance" class="text-3xl sm:text-4xl md:text-5xl font-extrabold mono tracking-tight text-white">HK$ 0.00</div>
+                                <div class="flex flex-wrap items-center gap-5 pt-1 text-xs text-slate-300/90">
+                                    <span class="flex items-center gap-1.5"><span class="w-5 h-5 rounded-md bg-emerald-500/20 text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-arrow-up text-[10px]"></i></span><span id="hero-all-inc">Income: HK$ 0.00</span></span>
+                                    <span class="flex items-center gap-1.5"><span class="w-5 h-5 rounded-md bg-rose-500/20 text-rose-400 flex items-center justify-center"><i class="fa-solid fa-arrow-down text-[10px]"></i></span><span id="hero-all-exp">Outcome: HK$ 0.00</span></span>
+                                </div>
+                            </div>
+
+                            <div class="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                <div class="bg-white/[0.05] border border-white/10 rounded-2xl p-4 backdrop-blur-md">
+                                    <div class="flex justify-between items-center text-[11px] font-bold mb-2">
+                                        <span id="hero-inc-target-lbl" class="text-emerald-300">Monthly Income Goal</span>
+                                        <span id="hero-inc-target-pct" class="mono text-white">0%</span>
+                                    </div>
+                                    <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden mb-2">
+                                        <div id="hero-inc-target-bar" class="bg-gradient-to-r from-emerald-400 to-teal-300 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                    </div>
+                                    <div id="hero-inc-target-amt" class="text-[11px] mono text-slate-300">HK$ 0 / HK$ 0</div>
+                                </div>
+
+                                <div class="bg-white/[0.05] border border-white/10 rounded-2xl p-4 backdrop-blur-md">
+                                    <div class="flex justify-between items-center text-[11px] font-bold mb-2">
+                                        <span id="hero-out-cap-lbl" class="text-rose-300">Monthly Outcome Cap</span>
+                                        <span id="hero-out-cap-pct" class="mono text-white">0%</span>
+                                    </div>
+                                    <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden mb-2">
+                                        <div id="hero-out-cap-bar" class="bg-gradient-to-r from-rose-400 to-amber-400 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                    </div>
+                                    <div id="hero-out-cap-amt" class="text-[11px] mono text-slate-300">HK$ 0 / HK$ 0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Multi-Wallet Live Balance Strip -->
+                    <div class="surface-card p-4 md:p-5 rounded-3xl">
+                        <div class="flex justify-between items-center mb-3.5">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-wallet text-emerald-500 text-xs"></i>
+                                <h3 data-i18n="wallets_title" class="font-display text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">HKD Wallets & Accounts</h3>
+                            </div>
+                            <button onclick="openTransferModal()" class="text-[11px] font-bold text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1">
+                                <i class="fa-solid fa-arrow-right-arrow-left text-[10px]"></i> <span data-i18n="transfer_wallets">Transfer / Top-up</span>
+                            </button>
+                        </div>
+                        <div id="wallet-balances-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"></div>
+                    </div>
+
+                    <!-- 3 Period KPI Metric Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="surface-card card-hover p-5 rounded-2xl">
+                            <div class="flex justify-between items-center mb-3">
+                                <span id="kpi-label-income" class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Monthly Income</span>
+                                <span class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-arrow-trend-up text-xs"></i></span>
+                            </div>
+                            <div id="kpi-month-income" class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mono">+HK$ 0.00</div>
+                            <div id="kpi-inc-sub" class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Target: HK$ 0.00</div>
+                        </div>
+
+                        <div class="surface-card card-hover p-5 rounded-2xl">
+                            <div class="flex justify-between items-center mb-3">
+                                <span id="kpi-label-outcome" class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Monthly Outcome</span>
+                                <span class="w-8 h-8 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center"><i class="fa-solid fa-arrow-trend-down text-xs"></i></span>
+                            </div>
+                            <div id="kpi-month-expense" class="text-2xl font-extrabold text-rose-600 dark:text-rose-400 mono">-HK$ 0.00</div>
+                            <div id="kpi-out-sub" class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Cap: HK$ 0.00</div>
+                        </div>
+
+                        <div class="surface-card card-hover p-5 rounded-2xl">
+                            <div class="flex justify-between items-center mb-3">
+                                <span data-i18n="fin_health" class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Financial Health</span>
+                                <span class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center"><i class="fa-solid fa-heart-pulse text-xs"></i></span>
+                            </div>
+                            <div id="kpi-health-score" class="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 mono">-- / 100</div>
+                            <div id="kpi-health-label" class="text-xs text-slate-500 dark:text-slate-400 mt-1.5">Log entries to compute score</div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Quick Action Pills -->
+                    <div class="md:hidden grid grid-cols-4 gap-2.5">
+                        <button onclick="openMobileQuickAdd('expense')" class="surface-card p-3 rounded-2xl flex flex-col items-center gap-1.5">
+                            <span class="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center"><i class="fa-solid fa-minus text-xs"></i></span>
+                            <span data-i18n="outcome_label" class="text-[11px] font-bold text-slate-700 dark:text-slate-200">Outcome</span>
+                        </button>
+                        <button onclick="openMobileQuickAdd('income')" class="surface-card p-3 rounded-2xl flex flex-col items-center gap-1.5">
+                            <span class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-plus text-xs"></i></span>
+                            <span data-i18n="income_label" class="text-[11px] font-bold text-slate-700 dark:text-slate-200">Income</span>
+                        </button>
+                        <button onclick="openTransferModal()" class="surface-card p-3 rounded-2xl flex flex-col items-center gap-1.5">
+                            <span class="w-9 h-9 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center"><i class="fa-solid fa-arrow-right-arrow-left text-xs"></i></span>
+                            <span data-i18n="transfer_btn" class="text-[11px] font-bold text-slate-700 dark:text-slate-200">Transfer</span>
+                        </button>
+                        <button onclick="switchTab('hktools')" class="surface-card p-3 rounded-2xl flex flex-col items-center gap-1.5">
+                            <span class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center"><i class="fa-solid fa-landmark text-xs"></i></span>
+                            <span data-i18n="tax_btn" class="text-[11px] font-bold text-slate-700 dark:text-slate-200">HK Tools</span>
+                        </button>
+                    </div>
+
+                    <!-- Charts Row -->
+                    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+                        <div class="xl:col-span-8 surface-card p-5 md:p-6 rounded-3xl">
+                            <div class="flex justify-between items-center mb-4">
+                                <div>
+                                    <h3 id="chart-cashflow-title" class="font-display text-sm font-extrabold text-slate-900 dark:text-white">Cashflow Trend</h3>
+                                    <p data-i18n="cashflow_sub" class="text-xs text-slate-500 dark:text-slate-400">Income vs. Outcome (HKD)</p>
+                                </div>
+                                <span id="burn-rate-pill" class="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-slate-700 mono">HK$ 0</span>
+                            </div>
+                            <div class="h-56 md:h-64 w-full">
+                                <canvas id="cashflow-chart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="xl:col-span-4 surface-card p-5 md:p-6 rounded-3xl flex flex-col justify-between">
+                            <div>
+                                <h3 data-i18n="spending_mix" class="font-display text-sm font-extrabold text-slate-900 dark:text-white mb-0.5">Category Spending Breakdown</h3>
+                                <p data-i18n="spending_mix_sub" class="text-xs text-slate-500 dark:text-slate-400 mb-3">Top expense categories in active period</p>
+                            </div>
+                            <div class="h-44 relative flex items-center justify-center">
+                                <canvas id="donut-chart"></canvas>
+                            </div>
+                            <div id="top-categories-list" class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80 space-y-2"></div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Entry + Recent Activity -->
+                    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+                        <div class="hidden md:block xl:col-span-5 surface-card p-6 rounded-3xl">
+                            <h3 class="font-display text-sm font-extrabold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                                <span class="w-7 h-7 rounded-lg bg-amber-500/15 text-amber-500 flex items-center justify-center"><i class="fa-solid fa-bolt text-xs"></i></span>
+                                <span data-i18n="quick_tx">Quick Transaction</span>
+                            </h3>
+                            <form id="tx-form" class="space-y-3.5">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label data-i18n="type_label" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Type</label>
+                                        <div class="grid grid-cols-2 gap-1 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200/70 dark:border-slate-800">
+                                            <button type="button" id="desk-type-outcome" onclick="setDesktopTxType('expense')" class="py-1.5 rounded-lg text-xs font-bold bg-rose-600 text-white shadow-2xs flex items-center justify-center gap-1">
+                                                <i class="fa-solid fa-arrow-down text-[10px]"></i> <span data-i18n="outcome_label">Outcome</span>
+                                            </button>
+                                            <button type="button" id="desk-type-income" onclick="setDesktopTxType('income')" class="py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center justify-center gap-1">
+                                                <i class="fa-solid fa-arrow-up text-[10px]"></i> <span data-i18n="income_label">Income</span>
+                                            </button>
+                                        </div>
+                                        <input type="hidden" id="tx-type" value="expense">
+                                    </div>
+                                    <div>
+                                        <label data-i18n="wallet" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Wallet</label>
+                                        <select id="tx-account" class="wallet-select w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-emerald-500"></select>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label data-i18n="category_label" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Category</label>
+                                        <select id="tx-category" class="category-select w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-emerald-500"></select>
+                                    </div>
+                                    <div>
+                                        <label data-i18n="amount_hkd" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Amount (HK$)</label>
+                                        <input type="number" id="tx-amount" step="0.01" min="0.01" required placeholder="0.00" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm mono font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-12 gap-3">
+                                    <div class="col-span-5">
+                                        <label data-i18n="date" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Date</label>
+                                        <input type="date" id="tx-date" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-2 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-emerald-500">
+                                    </div>
+                                    <div class="col-span-7">
+                                        <label data-i18n="description" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Description</label>
+                                        <input type="text" id="tx-desc" required maxlength="100" placeholder="e.g. TamJai Lunch, MTR, Salary" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500">
+                                    </div>
+                                </div>
+                                <button type="submit" data-i18n="save_entry_btn" class="w-full py-3 rounded-xl bg-slate-900 dark:bg-emerald-500 hover:brightness-110 text-white dark:text-slate-950 text-xs font-extrabold uppercase tracking-wider shadow-sm">
+                                    Save Entry Instantly
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="xl:col-span-7 surface-card p-5 md:p-6 rounded-3xl flex flex-col">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 data-i18n="recent_activity" class="font-display text-sm font-extrabold text-slate-900 dark:text-white">Recent Activity</h3>
+                                <button onclick="switchTab('ledger')" data-i18n="see_all" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline px-2.5 py-1 rounded-lg">See All →</button>
+                            </div>
+                            <div id="recent-tx-list" class="divide-y divide-slate-100 dark:divide-slate-800/70 flex-1"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== TAB 2: LEDGER & CSV ==================== -->
+                <section id="tab-ledger" class="tab-view hidden space-y-5 fade-up">
+                    <div class="surface-card p-4 rounded-2xl flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3">
+                        <div class="flex flex-wrap items-center gap-2 flex-1">
+                            <div class="relative flex-1 min-w-[160px]">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                <input type="text" id="search-tx" data-i18n-placeholder="search_ph" placeholder="Search merchant, wallet..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500">
+                            </div>
+                            <select id="filter-type" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                                <option value="ALL" data-i18n="all_types">All Types</option>
+                                <option value="expense" data-i18n="outcomes_only">Outcome Only</option>
+                                <option value="income" data-i18n="income_only">Income Only</option>
+                                <option value="transfer" data-i18n="transfers_only">Transfers Only</option>
+                            </select>
+                            <select id="filter-category" class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                                <option value="ALL" data-i18n="all_categories">All Categories</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button id="btn-sample-csv" class="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200/70 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-lines"></i> <span data-i18n="sample_csv">Template</span>
+                            </button>
+                            <label class="btn-press cursor-pointer px-3.5 py-2 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/20 text-xs font-bold flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-import"></i> <span data-i18n="import_csv">Import CSV</span>
+                                <input type="file" id="csv-import-input" accept=".csv" class="hidden">
+                            </label>
+                            <button id="btn-export-csv" class="px-3.5 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20 text-xs font-bold flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-export"></i> <span data-i18n="export_csv">Export CSV</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="surface-card rounded-3xl overflow-hidden">
+                        <div class="px-5 py-3.5 bg-slate-50/90 dark:bg-slate-900/70 border-b border-slate-200/80 dark:border-slate-800 flex justify-between items-center text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                            <span data-i18n="all_tx_header">ALL TRANSACTIONS</span>
+                            <span id="ledger-count" class="px-2.5 py-0.5 rounded-full bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-200">0</span>
+                        </div>
+                        <div id="full-tx-list" class="divide-y divide-slate-100 dark:divide-slate-800/70 max-h-[65vh] overflow-y-auto"></div>
+                    </div>
+                </section>
+
+                <!-- ==================== TAB 3: BUDGETS, INCOME GOALS & RECURRING BILLS ==================== -->
+                <section id="tab-planning" class="tab-view hidden space-y-5 fade-up">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="surface-card p-5 md:p-6 rounded-3xl space-y-4">
+                            <div>
+                                <h3 class="font-display text-base font-extrabold text-slate-900 dark:text-white"><i class="fa-solid fa-sliders text-emerald-600 dark:text-emerald-400 mr-2"></i><span data-i18n="budget_goal_title">Income Target, Outcome Cap & Goal</span></h3>
+                                <p data-i18n="budget_goal_sub" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Set Daily, Weekly, Monthly, or Yearly targets—synced to Google.</p>
+                            </div>
+                            <form id="goals-form" class="space-y-4">
+                                <div class="p-4 rounded-2xl bg-emerald-500/[0.05] border border-emerald-500/20 space-y-2.5">
+                                    <div class="text-xs font-extrabold text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-arrow-trend-up"></i> <span data-i18n="inc_target_sec">Income Target</span>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div>
+                                            <label data-i18n="inc_freq_label" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Income Period</label>
+                                            <select id="input-income-period" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm font-bold text-slate-900 dark:text-white">
+                                                <option value="daily" data-i18n="period_daily">Daily</option>
+                                                <option value="weekly" data-i18n="period_weekly">Weekly</option>
+                                                <option value="monthly" selected data-i18n="period_monthly">Monthly</option>
+                                                <option value="yearly" data-i18n="period_yearly">Yearly</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label data-i18n="inc_target_label" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Target Income (HK$)</label>
+                                            <input type="number" id="input-income-target" min="0" step="50" placeholder="e.g. 35000" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm mono font-bold text-slate-900 dark:text-white">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="p-4 rounded-2xl bg-rose-500/[0.05] border border-rose-500/20 space-y-2.5">
+                                    <div class="text-xs font-extrabold text-rose-700 dark:text-rose-400 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-arrow-trend-down"></i> <span data-i18n="out_cap_sec">Outcome Spending Cap</span>
+                                    </div>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div>
+                                            <label data-i18n="budget_freq_label" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Outcome Period</label>
+                                            <select id="input-budget-period" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm font-bold text-slate-900 dark:text-white">
+                                                <option value="daily" data-i18n="period_daily">Daily</option>
+                                                <option value="weekly" data-i18n="period_weekly">Weekly</option>
+                                                <option value="monthly" selected data-i18n="period_monthly">Monthly</option>
+                                                <option value="yearly" data-i18n="period_yearly">Yearly</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label data-i18n="outcome_cap_label" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Outcome Cap (HK$)</label>
+                                            <input type="number" id="input-monthly-budget" min="0" step="50" placeholder="e.g. 18000" class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm mono font-bold text-slate-900 dark:text-white">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label data-i18n="goal_name_label" class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Savings Goal Title</label>
+                                        <input type="text" id="input-goal-name" maxlength="40" placeholder="e.g. Emergency Fund" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 dark:text-white">
+                                    </div>
+                                    <div>
+                                        <label data-i18n="goal_target_label" class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Target Amount (HK$)</label>
+                                        <input type="number" id="input-goal-target" min="0" step="500" placeholder="e.g. 150000" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-2.5 text-sm mono font-bold text-slate-900 dark:text-white">
+                                    </div>
+                                </div>
+                                <button type="submit" data-i18n="save_targets_btn" class="w-full py-3 rounded-xl bg-slate-900 dark:bg-emerald-500 hover:brightness-110 text-white dark:text-slate-950 text-xs font-extrabold shadow-sm">Save Targets</button>
+                            </form>
+
+                            <div class="pt-4 border-t border-slate-200/70 dark:border-slate-800 space-y-3.5">
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold mb-1">
+                                        <span id="plan-inc-label" class="text-emerald-600 dark:text-emerald-400">Income Goal</span>
+                                        <span id="plan-inc-text" class="mono text-slate-900 dark:text-white">HK$ 0 / HK$ 0</span>
+                                    </div>
+                                    <div class="w-full bg-slate-200/70 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                                        <div id="plan-inc-bar" class="bg-emerald-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold mb-1">
+                                        <span id="plan-budget-label" class="text-rose-600 dark:text-rose-400">Outcome Cap</span>
+                                        <span id="plan-budget-text" class="mono text-slate-900 dark:text-white">HK$ 0 / HK$ 0</span>
+                                    </div>
+                                    <div class="w-full bg-slate-200/70 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                                        <div id="plan-budget-bar" class="bg-teal-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-bold mb-1">
+                                        <span id="plan-goal-label" class="text-indigo-600 dark:text-indigo-400">Savings Goal Progress</span>
+                                        <span id="plan-goal-text" class="mono text-indigo-600 dark:text-indigo-400">0%</span>
+                                    </div>
+                                    <div class="w-full bg-slate-200/70 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                                        <div id="plan-goal-bar" class="bg-indigo-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="surface-card p-5 md:p-6 rounded-3xl flex flex-col justify-between space-y-4">
+                            <div>
+                                <h3 class="font-display text-base font-extrabold text-slate-900 dark:text-white"><i class="fa-solid fa-repeat text-purple-600 dark:text-purple-400 mr-2"></i><span data-i18n="rec_title">Recurring Bills & Subscriptions</span></h3>
+                                <p data-i18n="rec_sub" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Save rent, fiber, gym, or streaming and log in 1 tap.</p>
+
+                                <form id="recurring-form" class="grid grid-cols-12 gap-2 mt-4">
+                                    <input type="text" id="rec-name" required data-i18n-placeholder="rec_name_ph" placeholder="Name (e.g. Rent)" class="col-span-5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-900 dark:text-white">
+                                    <select id="rec-freq" class="col-span-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2 py-2.5 text-xs font-semibold text-slate-800 dark:text-slate-100">
+                                        <option value="daily" data-i18n="period_daily">Daily</option>
+                                        <option value="weekly" data-i18n="period_weekly">Weekly</option>
+                                        <option value="monthly" selected data-i18n="period_monthly">Monthly</option>
+                                        <option value="yearly" data-i18n="period_yearly">Yearly</option>
+                                    </select>
+                                    <input type="number" id="rec-amount" required min="1" step="0.01" placeholder="HK$" class="col-span-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2 py-2.5 text-xs mono font-bold text-slate-900 dark:text-white">
+                                    <button type="submit" data-i18n="add_rec_btn" class="col-span-12 py-2.5 rounded-xl bg-slate-900 dark:bg-purple-600 hover:bg-purple-600 text-white text-xs font-bold shadow-2xs">+ Save Recurring Bill</button>
+                                </form>
+
+                                <div id="recurring-list" class="mt-4 divide-y divide-slate-100 dark:divide-slate-800/70 max-h-64 overflow-y-auto"></div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-purple-500/[0.08] border border-purple-500/20 flex justify-between items-center">
+                                <span data-i18n="fixed_total_label" class="text-xs font-bold text-purple-900 dark:text-purple-200">Saved Recurring Total</span>
+                                <span id="recurring-total" class="text-sm font-extrabold text-purple-700 dark:text-purple-300 mono">HK$ 0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ==================== TAB 4: HK TAX, MPF & PROPERTY LAB ==================== -->
+                <section id="tab-hktools" class="tab-view hidden space-y-6 fade-up">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- HK Salaries Tax -->
+                        <div class="surface-card p-5 md:p-6 rounded-3xl space-y-4">
+                            <div class="flex justify-between items-start gap-2">
+                                <div>
+                                    <h3 class="font-display text-base font-extrabold text-slate-900 dark:text-white"><i class="fa-solid fa-scale-balanced text-sky-600 dark:text-sky-400 mr-2"></i><span data-i18n="tax_title">HK Salaries Tax Estimator</span></h3>
+                                    <p data-i18n="tax_sub" class="text-xs text-slate-500 dark:text-slate-400">Progressive (2%–17%) vs. Standard Rate (15% / 16%)</p>
+                                </div>
+                                <button onclick="prefillTaxFromLedger()" data-i18n="use_ledger_btn" class="text-[11px] font-bold px-3 py-1.5 rounded-xl bg-sky-500/10 text-sky-700 dark:text-sky-300 hover:bg-sky-500/20 whitespace-nowrap">Use Ledger</button>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                    <label data-i18n="tax_inc_label" class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Annual Gross Income (HK$)</label>
+                                    <input type="number" id="tax-income" value="480000" min="0" step="1000" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm mono font-bold text-slate-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label data-i18n="tax_mpf_label" class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Mandatory MPF (HK$)</label>
+                                    <input type="number" id="tax-mpf" value="18000" min="0" max="18000" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm mono font-bold text-slate-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label data-i18n="tax_ded_label" class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">TVC / VHIS Deductions (HK$)</label>
+                                    <input type="number" id="tax-deductions" value="0" min="0" step="1000" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm mono font-bold text-slate-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label data-i18n="tax_status_label" class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Allowance Status</label>
+                                    <select id="tax-status" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-100">
+                                        <option value="132000" data-i18n="single_allow">Single (HK$ 132,000)</option>
+                                        <option value="264000" data-i18n="married_allow">Married Joint (HK$ 264,000)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="p-4 rounded-2xl hero-wealth-card text-white border border-white/10 grid grid-cols-2 gap-4">
+                                <div>
+                                    <div data-i18n="annual_tax_out" class="text-[11px] text-slate-400 uppercase font-bold">Annual Tax</div>
+                                    <div id="tax-result-annual" class="text-xl md:text-2xl font-extrabold text-emerald-400 mono mt-0.5">HK$ 0</div>
+                                </div>
+                                <div>
+                                    <div data-i18n="monthly_tax_out" class="text-[11px] text-slate-400 uppercase font-bold">Monthly Set-Aside</div>
+                                    <div id="tax-result-monthly" class="text-xl md:text-2xl font-extrabold text-sky-400 mono mt-0.5">HK$ 0</div>
+                                </div>
+                                <div class="col-span-2 text-[11px] text-slate-300 border-t border-white/10 pt-2" id="tax-method-note">
+                                    Calculated at Progressive Rates.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MPF Retirement Simulator -->
+                        <div class="surface-card p-5 md:p-6 rounded-3xl space-y-4">
+                            <div>
+                                <h3 class="font-display text-base font-extrabold text-slate-900 dark:text-white"><i class="fa-solid fa-seedling text-emerald-600 dark:text-emerald-400 mr-2"></i><span data-i18n="mpf_title">MPF Retirement Simulator</span></h3>
+                                <p data-i18n="mpf_sub" class="text-xs text-slate-500 dark:text-slate-400">Compound growth projection for your HK MPF portfolio</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label data-i18n="mpf_cur_label" class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Current MPF (HK$)</label>
+                                    <input type="number" id="mpf-current" value="120000" min="0" step="5000" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm mono font-bold text-slate-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label data-i18n="mpf_mo_label" class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Monthly Total (HK$)</label>
+                                    <input type="number" id="mpf-monthly" value="3000" min="0" step="250" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm mono font-bold text-slate-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label data-i18n="mpf_ret_label" class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Annual Return (%)</label>
+                                    <input type="number" id="mpf-return" value="6.5" min="0" max="20" step="0.5" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm mono font-bold text-slate-900 dark:text-white">
+                                </div>
+                                <div>
+                                    <label data-i18n="mpf_yr_label" class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Years</label>
+                                    <input type="number" id="mpf-years" value="25" min="1" max="50" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm mono font-bold text-slate-900 dark:text-white">
+                                </div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-sky-600 text-white shadow-lg shadow-emerald-600/20">
+                                <div data-i18n="mpf_out_label" class="text-[11px] uppercase font-bold text-emerald-100">Projected MPF Balance</div>
+                                <div id="mpf-result-total" class="text-2xl md:text-3xl font-extrabold mono mt-1">HK$ 0</div>
+                                <div id="mpf-result-breakdown" class="text-xs text-emerald-100 mt-1">Principal vs. Gains</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HK Property Mortgage & Stamp Duty Calculator -->
+                    <div class="surface-card p-5 md:p-6 rounded-3xl space-y-4">
+                        <div class="flex flex-wrap justify-between items-center gap-2">
+                            <div>
+                                <h3 class="font-display text-base font-extrabold text-slate-900 dark:text-white"><i class="fa-solid fa-building text-indigo-600 dark:text-indigo-400 mr-2"></i><span data-i18n="prop_title">HK Property Mortgage & Stamp Duty Calculator</span></h3>
+                                <p data-i18n="prop_sub" class="text-xs text-slate-500 dark:text-slate-400">Estimate monthly HIBOR/Prime mortgage repayments, downpayment & HK Ad Valorem Stamp Duty</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                            <div>
+                                <label data-i18n="prop_price_label" class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Property Price (HK$)</label>
+                                <input type="number" id="prop-price" value="6500000" min="500000" step="100000" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm mono font-bold text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label data-i18n="prop_ltv_label" class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Mortgage LTV (%)</label>
+                                <input type="number" id="prop-ltv" value="70" min="10" max="90" step="5" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm mono font-bold text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label data-i18n="prop_rate_label" class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Interest Rate (% p.a.)</label>
+                                <input type="number" id="prop-rate" value="3.875" min="0.5" max="15" step="0.125" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm mono font-bold text-slate-900 dark:text-white">
+                            </div>
+                            <div>
+                                <label data-i18n="prop_yrs_label" class="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">Tenor (Years)</label>
+                                <input type="number" id="prop-years" value="30" min="5" max="30" step="1" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-sm mono font-bold text-slate-900 dark:text-white">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-1">
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+                                <div data-i18n="prop_monthly_out" class="text-[11px] font-bold uppercase text-slate-400">Monthly Repayment</div>
+                                <div id="prop-res-monthly" class="text-xl font-extrabold mono text-indigo-600 dark:text-indigo-400 mt-0.5">HK$ 0</div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+                                <div data-i18n="prop_down_out" class="text-[11px] font-bold uppercase text-slate-400">Cash Downpayment</div>
+                                <div id="prop-res-down" class="text-xl font-extrabold mono text-slate-900 dark:text-white mt-0.5">HK$ 0</div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800">
+                                <div data-i18n="prop_stamp_out" class="text-[11px] font-bold uppercase text-slate-400">Est. Stamp Duty (Scale 2)</div>
+                                <div id="prop-res-stamp" class="text-xl font-extrabold mono text-emerald-600 dark:text-emerald-400 mt-0.5">HK$ 0</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- MOBILE NATIVE BOTTOM NAVIGATION BAR -->
+        <nav id="mobile-bottom-nav" class="md:hidden fixed bottom-0 inset-x-0 bg-white/95 dark:bg-[#090D18]/95 backdrop-blur-xl border-t border-slate-200/80 dark:border-slate-800/80 flex justify-around items-center py-2 pb-safe z-30 shadow-[0_-6px_24px_rgba(0,0,0,0.06)]">
+            <button data-tab="overview" class="mob-nav-btn text-emerald-600 dark:text-emerald-400 flex flex-col items-center justify-center flex-1 py-1 text-[10px] font-bold">
+                <i class="fa-solid fa-house text-base mb-0.5"></i><span data-i18n="mob_home">Home</span>
+            </button>
+            <button data-tab="ledger" class="mob-nav-btn text-slate-400 flex flex-col items-center justify-center flex-1 py-1 text-[10px] font-bold">
+                <i class="fa-solid fa-receipt text-base mb-0.5"></i><span data-i18n="mob_ledger">Ledger</span>
+            </button>
+            <button onclick="openMobileQuickAdd('expense')" aria-label="Add Entry" class="-mt-6 w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 via-teal-500 to-sky-500 text-slate-950 shadow-lg shadow-emerald-500/30 flex items-center justify-center text-lg ring-4 ring-white dark:ring-[#090D18]">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+            <button data-tab="planning" class="mob-nav-btn text-slate-400 flex flex-col items-center justify-center flex-1 py-1 text-[10px] font-bold">
+                <i class="fa-solid fa-bullseye text-base mb-0.5"></i><span data-i18n="mob_goals">Goals</span>
+            </button>
+            <button data-tab="hktools" class="mob-nav-btn text-slate-400 flex flex-col items-center justify-center flex-1 py-1 text-[10px] font-bold">
+                <i class="fa-solid fa-landmark text-base mb-0.5"></i><span data-i18n="mob_tax">HK Tools</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- QUICK ADD TRANSACTION MODAL -->
+    <div id="mobile-add-modal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-[130] hidden items-end sm:items-center justify-center">
+        <div class="bg-white dark:bg-[#0C111E] rounded-t-3xl sm:rounded-3xl w-full max-w-md p-6 pb-safe shadow-2xl border-t sm:border border-slate-200 dark:border-slate-800 fade-up">
+            <div class="w-10 h-1 bg-slate-300 dark:bg-slate-700 rounded-full mx-auto mb-4 sm:hidden"></div>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-display text-base font-extrabold text-slate-900 dark:text-white"><i class="fa-solid fa-circle-plus text-emerald-600 dark:text-emerald-400 mr-2"></i><span data-i18n="new_tx_title">New Transaction</span></h3>
+                <button onclick="toggleModal('mobile-add-modal', false)" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="mob-tx-form" class="space-y-3.5">
+                <div>
+                    <label data-i18n="type_label" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1.5">Type</label>
+                    <div class="grid grid-cols-2 gap-2 bg-slate-100 dark:bg-slate-900 p-1.5 rounded-2xl border border-slate-200/70 dark:border-slate-800">
+                        <button type="button" id="mob-type-outcome" onclick="setMobileTxType('expense')" class="py-2.5 rounded-xl text-sm font-extrabold bg-rose-600 text-white shadow-2xs flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-arrow-down"></i> <span data-i18n="outcome_label">Outcome</span>
+                        </button>
+                        <button type="button" id="mob-type-income" onclick="setMobileTxType('income')" class="py-2.5 rounded-xl text-sm font-extrabold text-slate-600 dark:text-slate-400 flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-arrow-up"></i> <span data-i18n="income_label">Income</span>
+                        </button>
+                    </div>
+                    <input type="hidden" id="mob-tx-type" value="expense">
+                </div>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label data-i18n="amount_hkd" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Amount (HK$)</label>
+                        <input type="number" id="mob-tx-amount" step="0.01" min="0.01" required placeholder="0.00" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-base mono font-bold text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label data-i18n="wallet" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Wallet</label>
+                        <select id="mob-tx-account" class="wallet-select w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-900 dark:text-white"></select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label data-i18n="category_label" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Category</label>
+                        <select id="mob-tx-category" class="category-select w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-900 dark:text-white"></select>
+                    </div>
+                    <div>
+                        <label data-i18n="date" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Date</label>
+                        <input type="date" id="mob-tx-date" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-900 dark:text-white">
+                    </div>
+                </div>
+                <div>
+                    <label data-i18n="description" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Description</label>
+                    <input type="text" id="mob-tx-desc" required maxlength="100" placeholder="e.g. Lunch, MTR, Salary" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-sm text-slate-900 dark:text-white">
+                </div>
+                <button type="submit" data-i18n="save_entry_btn" class="w-full py-3.5 rounded-2xl bg-slate-900 dark:bg-emerald-500 hover:brightness-110 text-white dark:text-slate-950 text-sm font-extrabold shadow-lg">Save Instantly</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- WALLET TRANSFER MODAL -->
+    <div id="transfer-modal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-[135] hidden items-end sm:items-center justify-center">
+        <div class="bg-white dark:bg-[#0C111E] rounded-t-3xl sm:rounded-3xl w-full max-w-md p-6 pb-safe shadow-2xl border-t sm:border border-slate-200 dark:border-slate-800 fade-up">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-display text-base font-extrabold text-slate-900 dark:text-white"><i class="fa-solid fa-arrow-right-arrow-left text-sky-500 mr-2"></i><span data-i18n="transfer_title">Transfer Between Wallets</span></h3>
+                <button onclick="toggleModal('transfer-modal', false)" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p data-i18n="transfer_sub" class="text-xs text-slate-500 dark:text-slate-400 mb-4">Move money (e.g. Bank → Octopus top-up) without affecting Income or Outcome stats.</p>
+            <form id="transfer-form" class="space-y-3.5">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label data-i18n="from_wallet" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">From Wallet</label>
+                        <select id="tr-from" class="wallet-select w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-900 dark:text-white"></select>
+                    </div>
+                    <div>
+                        <label data-i18n="to_wallet" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">To Wallet</label>
+                        <select id="tr-to" class="wallet-select w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-900 dark:text-white"></select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label data-i18n="amount_hkd" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Amount (HK$)</label>
+                        <input type="number" id="tr-amount" step="0.01" min="0.01" required placeholder="500.00" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-sm mono font-bold text-slate-900 dark:text-white">
+                    </div>
+                    <div>
+                        <label data-i18n="date" class="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">Date</label>
+                        <input type="date" id="tr-date" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-900 dark:text-white">
+                    </div>
+                </div>
+                <button type="submit" data-i18n="confirm_transfer" class="w-full py-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-extrabold uppercase tracking-wider shadow-md">Confirm Wallet Transfer</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- COMMAND PALETTE MODAL (⌘K / Ctrl+K) -->
+    <div id="cmd-modal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-md z-[150] hidden items-start justify-center pt-20 px-4">
+        <div class="bg-white dark:bg-[#0C111E] rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 fade-up">
+            <div class="p-4 border-b border-slate-200/80 dark:border-slate-800 flex items-center gap-3">
+                <i class="fa-solid fa-magnifying-glass text-emerald-500 text-sm"></i>
+                <input type="text" id="cmd-input" placeholder="Type a command or jump to view..." class="flex-1 bg-transparent text-sm text-slate-900 dark:text-white outline-none">
+                <button onclick="toggleModal('cmd-modal', false)" class="text-xs font-mono px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">ESC</button>
+            </div>
+            <div id="cmd-list" class="p-2 max-h-72 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/60"></div>
+        </div>
+    </div>
+
+    <!-- LOADING OVERLAY -->
+    <div id="loading-overlay" class="fixed inset-0 bg-slate-950/65 backdrop-blur-md z-[250] hidden items-center justify-center p-4">
+        <div class="bg-[#0C111E] border border-white/15 px-7 py-6 rounded-3xl shadow-2xl flex flex-col items-center max-w-xs w-full text-center fade-up">
+            <div class="loader-ring mb-4"></div>
+            <div id="loading-text" class="text-white text-xs sm:text-sm font-extrabold tracking-wide">Connecting...</div>
+            <div class="text-[11px] text-slate-400 mt-1">HKFin.app</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, CACHE_SIZE_UNLIMITED, doc, collection, onSnapshot, addDoc, deleteDoc, setDoc, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCMLO8UDyKLJvkJENpoTKDKmaCoJafhWCw",
+            authDomain: "finflow-0815.firebaseapp.com",
+            projectId: "finflow-0815",
+            storageBucket: "finflow-0815.firebasestorage.app",
+            messagingSenderId: "1048390764982",
+            appId: "1:1048390764982:web:dbd4930813aab39f469917",
+            measurementId: "G-WKCG3CYXWC"
+        };
+
+        function showLoader(msg) {
+            const overlay = document.getElementById('loading-overlay');
+            const txt = document.getElementById('loading-text');
+            if (txt) txt.textContent = msg || t('loading_sync');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+        }
+        function hideLoader() {
+            const overlay = document.getElementById('loading-overlay');
+            overlay.classList.add('hidden');
+            overlay.classList.remove('flex');
+        }
+
+        document.addEventListener('pointerdown', (e) => {
+            const btn = e.target.closest('button, .btn-press');
+            if (!btn || btn.disabled) return;
+            const rect = btn.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const ripple = document.createElement('span');
+            ripple.className = 'btn-ripple';
+            ripple.style.width = ripple.style.height = `${size}px`;
+            ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+            ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+            btn.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 480);
+        });
+
+        // ==================== LOCAL TIMEZONE DATE HELPERS ====================
+        function toLocalISO(d) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        function getLocalWeekBounds(refDate = new Date()) {
+            const start = new Date(refDate.getFullYear(), refDate.getMonth(), refDate.getDate());
+            const dayOfWeek = start.getDay();
+            const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+            start.setDate(start.getDate() + diffToMonday);
+            const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6);
+            return { start, end, startStr: toLocalISO(start), endStr: toLocalISO(end) };
+        }
+
+        function getPeriodRangeLabel(period) {
+            const now = new Date();
+            const loc = userSettings.lang === 'en' ? 'en-HK' : userSettings.lang;
+            if (period === 'daily') return now.toLocaleDateString(loc, { month: 'short', day: 'numeric', year: 'numeric' });
+            if (period === 'weekly') {
+                const { start, end } = getLocalWeekBounds(now);
+                return `${start.toLocaleDateString(loc, { month: 'short', day: 'numeric' })} – ${end.toLocaleDateString(loc, { month: 'short', day: 'numeric' })}`;
+            }
+            if (period === 'monthly') return now.toLocaleDateString(loc, { month: 'long', year: 'numeric' });
+            return String(now.getFullYear());
+        }
+
+        function isDateInPeriod(dateStr, period) {
+            if (!dateStr) return false;
+            const clean = String(dateStr).trim().slice(0, 10);
+            const now = new Date();
+            const todayStr = toLocalISO(now);
+            if (period === 'daily') return clean === todayStr;
+            if (period === 'weekly') {
+                const { startStr, endStr } = getLocalWeekBounds(now);
+                return clean >= startStr && clean <= endStr;
+            }
+            if (period === 'monthly') return clean.startsWith(todayStr.slice(0, 7));
+            if (period === 'yearly') return clean.startsWith(todayStr.slice(0, 4));
+            return true;
+        }
+
+        // ==================== CATEGORIES & WALLETS ====================
+        const WALLETS = [
+            { val: 'HSBC / Bank', icon: '🏦', labels: { en: '🏦 HSBC / Bank', 'zh-HK': '🏦 銀行戶口', 'zh-CN': '🏦 银行账户' } },
+            { val: 'Octopus', icon: '🐙', labels: { en: '🐙 Octopus Card', 'zh-HK': '🐙 八達通', 'zh-CN': '🐙 八达通' } },
+            { val: 'Credit Card', icon: '💳', labels: { en: '💳 Credit Card', 'zh-HK': '💳 信用卡', 'zh-CN': '💳 信用卡' } },
+            { val: 'PayMe / FPS', icon: '📱', labels: { en: '📱 PayMe / FPS', 'zh-HK': '📱 PayMe / 轉數快', 'zh-CN': '📱 PayMe / 转数快' } },
+            { val: 'Cash', icon: '💵', labels: { en: '💵 Cash', 'zh-HK': '💵 現金', 'zh-CN': '💵 现金' } }
+        ];
+
+        const CATEGORIES = [
+            { val: 'Dining', color: '#f43f5e', keywords: ['lunch', 'dinner', 'breakfast', 'cafe', 'coffee', 'tea', 'tamjai', 'mcdonald', 'food', 'eat', 'restaurant', '茶餐廳', '午餐', '晚餐', '早餐', '咖啡'], labels: { en: '🍜 Dining & Cafe', 'zh-HK': '🍜 餐飲美食', 'zh-CN': '🍜 餐饮美食' } },
+            { val: 'Transport', color: '#38bdf8', keywords: ['mtr', 'bus', 'taxi', 'uber', 'ferry', 'octopus', 'minibus', 'train', 'parking', 'fuel', '地鐵', '巴士', '的士', '車費'], labels: { en: '🚇 MTR & Transport', 'zh-HK': '🚇 交通出行', 'zh-CN': '🚇 交通出行' } },
+            { val: 'Housing', color: '#8b5cf6', keywords: ['rent', 'mortgage', 'management', 'rates', 'water', 'electric', 'clp', 'hke', 'towngas', 'fiber', 'internet', '租金', '供樓', '水電', '寬頻'], labels: { en: '🏠 Housing & Bills', 'zh-HK': '🏠 住屋及賬單', 'zh-CN': '🏠 住房及账单' } },
+            { val: 'Shopping', color: '#f59e0b', keywords: ['shop', 'amazon', 'taobao', 'hktvmall', 'uniqlo', 'apple', 'clothes', 'gift', '網購', '購物'], labels: { en: '🛍️ Shopping', 'zh-HK': '🛍️ 購物消費', 'zh-CN': '🛍️ 购物消费' } },
+            { val: 'Groceries', color: '#14b8a6', keywords: ['parknshop', 'wellcome', 'market', 'supermarket', '759', 'donki', 'aeon', '超市', '街市'], labels: { en: '🛒 Groceries', 'zh-HK': '🛒 超市日用', 'zh-CN': '🛒 超市日用' } },
+            { val: 'Entertainment', color: '#ec4899', keywords: ['netflix', 'spotify', 'cinema', 'movie', 'game', 'gym', 'fitness', 'travel', 'flight', 'hotel', '電影', '健身', '旅遊'], labels: { en: '🎬 Lifestyle & Gym', 'zh-HK': '🎬 娛樂及健身', 'zh-CN': '🎬 娱乐及健身' } },
+            { val: 'Healthcare', color: '#06b6d4', keywords: ['doctor', 'clinic', 'dental', 'pharmacy', 'mannings', 'watsons', 'hospital', '醫療', '診所', '藥房'], labels: { en: '🩺 Healthcare', 'zh-HK': '🩺 醫療保健', 'zh-CN': '🩺 医疗保健' } },
+            { val: 'Salary', color: '#10b981', keywords: ['salary', 'payroll', 'bonus', 'freelance', 'client', 'dividend', 'interest', 'refund', '出糧', '薪金', '花紅', '股息'], labels: { en: '💼 Salary & Income', 'zh-HK': '💼 薪金及收入', 'zh-CN': '💼 薪资及收入' } },
+            { val: 'Other', color: '#64748b', keywords: [], labels: { en: '📦 General / Other', 'zh-HK': '📦 其他項目', 'zh-CN': '📦 其他项目' } }
+        ];
+
+        function autoDetectCategory(desc, txType) {
+            if (txType === 'income') return 'Salary';
+            const lower = (desc || '').toLowerCase();
+            for (const c of CATEGORIES) {
+                if (c.val === 'Salary' || c.val === 'Other') continue;
+                if (c.keywords.some(kw => lower.includes(kw))) return c.val;
+            }
+            return null;
+        }
+
+        // ==================== I18N ====================
+        const I18N = {
+            en: {
+                sign_in: "Sign In",
+                nav_feat_link: "Capabilities",
+                nav_hk_link: "HK Tax & Property",
+                nav_sync_link: "Google Cloud Sync",
+                hero_badge: "Zero-Latency Mobile & Desktop Cloud Sync",
+                hero_title_1: "Your Complete",
+                hero_title_hk: "Hong Kong",
+                hero_title_2: "Financial Command Center",
+                hero_desc: "Track HKD cashflow, Octopus & bank wallets, recurring bills, Salaries Tax, Stamp Duty, and MPF growth—saved permanently to your Google account across desktop and mobile.",
+                continue_google: "Continue with Google",
+                explore_features: "Explore Wealth OS",
+                trust_1: "Bank, Octopus, FPS",
+                trust_2: "Local Edge Cache",
+                trust_3: "IRD & MPF Built-in",
+                landing_sec_tag: "BUILT FOR HONG KONG",
+                landing_sec_title: "Everything Your Bank App Misses",
+                feat_1_t: "Multi-Wallet & Transfers",
+                feat_1_d: "Track HSBC/Bank, Octopus, Credit Card, PayMe/FPS, and Cash balances with 1-click top-up transfers.",
+                feat_2_t: "Daily to Yearly Analytics",
+                feat_2_d: "Switch instantly between Daily, Weekly, Monthly, and Yearly cashflow trends and scaled budget caps.",
+                feat_3_t: "HK Tax, MPF & Property",
+                feat_3_d: "Calculate Salaries Tax (Progressive vs Standard), MPF compounding, and HK Mortgage + Stamp Duty.",
+                feat_4_t: "Instant Google Sync & ⌘K",
+                feat_4_d: "Offline-first IndexedDB persistence + Google Cloud sync, CSV import/export, and keyboard shortcuts.",
+                workspace_label: "WEALTH WORKSPACE",
+                quick_cmd: "Quick Actions...",
+                nav_overview: "Overview",
+                nav_ledger: "Transactions & CSV",
+                nav_planning: "Budgets, Goals & Bills",
+                nav_hktools: "HK Tax, MPF & Property",
+                theme_label: "APPEARANCE",
+                dark_mode: "Dark",
+                light_mode: "Light",
+                lang_label: "LANGUAGE",
+                sync_status: "SYNC STATUS",
+                saved: "Synced",
+                transfer_btn: "Transfer",
+                add_entry: "Add Entry",
+                period_label: "Timeframe",
+                period_daily: "Daily",
+                period_weekly: "Weekly",
+                period_monthly: "Monthly",
+                period_yearly: "Yearly",
+                net_balance: "Net Cash Balance",
+                wallets_title: "HKD Wallets & Accounts",
+                transfer_wallets: "Transfer / Top-up",
+                fin_health: "Financial Health",
+                income_label: "Income",
+                outcome_label: "Outcome",
+                goals_btn: "Goals",
+                tax_btn: "HK Tools",
+                cashflow_sub: "Income vs. Outcome (HKD)",
+                spending_mix: "Category Spending Breakdown",
+                spending_mix_sub: "Top expense categories in active period",
+                quick_tx: "Quick Transaction",
+                type_label: "Type",
+                wallet: "Wallet",
+                category_label: "Category",
+                amount_hkd: "Amount (HK$)",
+                date: "Date",
+                description: "Description",
+                save_entry_btn: "Save Entry Instantly",
+                recent_activity: "Recent Activity",
+                see_all: "See All →",
+                search_ph: "Search merchant, wallet, category...",
+                all_types: "All Types",
+                outcomes_only: "Outcome Only",
+                income_only: "Income Only",
+                transfers_only: "Transfers Only",
+                all_categories: "All Categories",
+                sample_csv: "Template",
+                import_csv: "Import CSV",
+                export_csv: "Export CSV",
+                all_tx_header: "ALL TRANSACTIONS",
+                budget_goal_title: "Income Target, Outcome Cap & Goal",
+                budget_goal_sub: "Set Daily, Weekly, Monthly, or Yearly targets—synced to Google.",
+                inc_target_sec: "Income Target",
+                inc_freq_label: "Income Period",
+                inc_target_label: "Target Income (HK$)",
+                out_cap_sec: "Outcome Spending Cap",
+                budget_freq_label: "Outcome Period",
+                outcome_cap_label: "Outcome Cap (HK$)",
+                goal_name_label: "Savings Goal Title",
+                goal_target_label: "Target Amount (HK$)",
+                save_targets_btn: "Save Targets",
+                rec_title: "Recurring Bills & Subscriptions",
+                rec_sub: "Save rent, fiber, gym, or streaming and log in 1 tap.",
+                rec_name_ph: "Name (e.g. Rent)",
+                add_rec_btn: "+ Save Recurring Bill",
+                fixed_total_label: "Saved Recurring Total",
+                tax_title: "HK Salaries Tax Estimator",
+                tax_sub: "Progressive (2%–17%) vs. Standard Rate (15% / 16%)",
+                use_ledger_btn: "Use Ledger",
+                tax_inc_label: "Annual Gross Income (HK$)",
+                tax_mpf_label: "Mandatory MPF (HK$)",
+                tax_ded_label: "TVC / VHIS Deductions (HK$)",
+                tax_status_label: "Allowance Status",
+                single_allow: "Single (HK$ 132,000)",
+                married_allow: "Married Joint (HK$ 264,000)",
+                annual_tax_out: "Annual Tax",
+                monthly_tax_out: "Monthly Set-Aside",
+                mpf_title: "MPF Retirement Simulator",
+                mpf_sub: "Compound growth projection for your HK MPF portfolio",
+                mpf_cur_label: "Current MPF (HK$)",
+                mpf_mo_label: "Monthly Total (HK$)",
+                mpf_ret_label: "Annual Return (%)",
+                mpf_yr_label: "Years",
+                mpf_out_label: "Projected MPF Balance",
+                prop_title: "HK Property Mortgage & Stamp Duty Calculator",
+                prop_sub: "Estimate monthly HIBOR/Prime mortgage repayments, downpayment & HK Ad Valorem Stamp Duty",
+                prop_price_label: "Property Price (HK$)",
+                prop_ltv_label: "Mortgage LTV (%)",
+                prop_rate_label: "Interest Rate (% p.a.)",
+                prop_yrs_label: "Tenor (Years)",
+                prop_monthly_out: "Monthly Repayment",
+                prop_down_out: "Cash Downpayment",
+                prop_stamp_out: "Est. Stamp Duty (Scale 2)",
+                transfer_title: "Transfer Between Wallets",
+                transfer_sub: "Move money (e.g. Bank → Octopus top-up) without affecting Income or Outcome stats.",
+                from_wallet: "From Wallet",
+                to_wallet: "To Wallet",
+                confirm_transfer: "Confirm Wallet Transfer",
+                mob_home: "Home",
+                mob_ledger: "Ledger",
+                mob_goals: "Goals",
+                mob_tax: "HK Tools",
+                new_tx_title: "New Transaction",
+                loading_sync: "Syncing with Google Cloud...",
+                loading_auth: "Connecting to Google Account...",
+                loading_csv: "Batch importing CSV records...",
+                log_now: "Log Now",
+                sub_overview: "Real-time Hong Kong Dollar cashflow, wallets & wealth analytics",
+                sub_ledger: "Search, filter, import or export your Google-synced ledger",
+                sub_planning: "Control income goals, spending caps & recurring HK bills",
+                sub_hktools: "Hong Kong Salaries Tax, MPF compounding & Property Stamp Duty lab"
+            },
+            "zh-HK": {
+                sign_in: "登入",
+                nav_feat_link: "核心功能",
+                nav_hk_link: "香港稅務及置業",
+                nav_sync_link: "Google 雲端同步",
+                hero_badge: "零延遲手機及桌面版雲端同步",
+                hero_title_1: "您的全方位",
+                hero_title_hk: "香港",
+                hero_title_2: "個人財富管理中心",
+                hero_desc: "輕鬆追蹤港幣收支、八達通及銀行錢包、固定賬單、香港薪俸稅、物業印花稅及強積金增長——自動永久儲存至您的 Google 帳戶。",
+                continue_google: "使用 Google 帳戶繼續",
+                explore_features: "探索系統功能",
+                trust_1: "銀行、八達通、轉數快",
+                trust_2: "本地毫秒級快取",
+                trust_3: "內置薪俸稅及強積金",
+                landing_sec_tag: "專為香港人打造",
+                landing_sec_title: "補足傳統銀行 App 的所有盲點",
+                feat_1_t: "多錢包餘額與內部轉賬",
+                feat_1_d: "獨立追蹤銀行、八達通、信用卡、PayMe/轉數快及現金餘額，支援一鍵增值轉賬。",
+                feat_2_t: "每日至每年多維度分析",
+                feat_2_d: "隨時切換每日、每週、每月及每年收支趨勢，自動換算目標與支出上限。",
+                feat_3_t: "薪俸稅、強積金及按揭計算",
+                feat_3_d: "即時比較累進稅率與標準稅率，並估算強積金複息及香港物業按揭與印花稅。",
+                feat_4_t: "Google 雲端同步與快捷鍵",
+                feat_4_d: "支援離線本地快取及 Google 實時同步、CSV 批量匯入匯出及 ⌘K 指令面板。",
+                workspace_label: "香港個人財富系統",
+                quick_cmd: "快速指令搜尋...",
+                nav_overview: "總覽儀表板",
+                nav_ledger: "收支明細與 CSV",
+                nav_planning: "預算、目標與賬單",
+                nav_hktools: "稅務、強積金與置業",
+                theme_label: "外觀主題",
+                dark_mode: "深色",
+                light_mode: "淺色",
+                lang_label: "語言設定",
+                sync_status: "同步狀態",
+                saved: "已即時同步",
+                transfer_btn: "轉賬",
+                add_entry: "記一筆",
+                period_label: "統計週期",
+                period_daily: "每日",
+                period_weekly: "每週",
+                period_monthly: "每月",
+                period_yearly: "每年",
+                net_balance: "淨現金總結餘",
+                wallets_title: "港幣錢包及戶口分佈",
+                transfer_wallets: "錢包轉賬 / 增值",
+                fin_health: "財務健康評分",
+                income_label: "收入",
+                outcome_label: "支出",
+                goals_btn: "目標",
+                tax_btn: "港府工具",
+                cashflow_sub: "收入與支出對比 (HKD)",
+                spending_mix: "分類支出分佈",
+                spending_mix_sub: "當前週期主要消費類別佔比",
+                quick_tx: "快速記賬",
+                type_label: "類型",
+                wallet: "錢包 / 帳戶",
+                category_label: "消費分類",
+                amount_hkd: "金額 (HK$)",
+                date: "日期",
+                description: "備註說明",
+                save_entry_btn: "立即儲存",
+                recent_activity: "最近交易紀錄",
+                see_all: "查看全部 →",
+                search_ph: "搜尋商戶、錢包或分類...",
+                all_types: "全部類型",
+                outcomes_only: "僅顯示支出",
+                income_only: "僅顯示收入",
+                transfers_only: "僅顯示轉賬",
+                all_categories: "全部分類",
+                sample_csv: "範本",
+                import_csv: "匯入 CSV",
+                export_csv: "匯出 CSV",
+                all_tx_header: "所有交易紀錄",
+                budget_goal_title: "收入目標、支出上限與儲蓄目標",
+                budget_goal_sub: "可自由設定每日、每週、每月或每年目標，永久儲存於 Google。",
+                inc_target_sec: "收入目標",
+                inc_freq_label: "收入週期",
+                inc_target_label: "目標收入 (HK$)",
+                out_cap_sec: "支出消費上限",
+                budget_freq_label: "支出週期",
+                outcome_cap_label: "支出上限 (HK$)",
+                goal_name_label: "儲蓄目標名稱",
+                goal_target_label: "目標金額 (HK$)",
+                save_targets_btn: "儲存預算與目標",
+                rec_title: "固定賬單與定期訂閱",
+                rec_sub: "儲存租金、寬頻、健身或串流訂閱，一鍵入賬。",
+                rec_name_ph: "名稱 (例如：租金)",
+                add_rec_btn: "+ 新增固定賬單",
+                fixed_total_label: "已儲存固定賬單總計",
+                tax_title: "香港薪俸稅計算機",
+                tax_sub: "自動比較累進稅率 (2%–17%) 與標準稅率 (15% / 16%)",
+                use_ledger_btn: "套用賬本收入",
+                tax_inc_label: "全年總入息 (HK$)",
+                tax_mpf_label: "強積金強制性供款 (HK$)",
+                tax_ded_label: "可扣稅強積金 / 自願醫保 (HK$)",
+                tax_status_label: "免稅額類別",
+                single_allow: "單身 (基本免稅額 HK$ 132,000)",
+                married_allow: "已婚合併評稅 (HK$ 264,000)",
+                annual_tax_out: "預計全年稅款",
+                monthly_tax_out: "建議每月預留稅款",
+                mpf_title: "強積金 (MPF) 複息模擬器",
+                mpf_sub: "模擬僱主及僱員供款的長期退休回報",
+                mpf_cur_label: "現有強積金結餘 (HK$)",
+                mpf_mo_label: "每月總供款 (HK$)",
+                mpf_ret_label: "預期年回報率 (%)",
+                mpf_yr_label: "投資年期 (年)",
+                mpf_out_label: "預計強積金總結餘",
+                prop_title: "香港物業按揭及印花稅計算機",
+                prop_sub: "估算每月 H 按 / P 按供款、首期資金及香港從價印花稅 (第2標準稅率)",
+                prop_price_label: "物業樓價 (HK$)",
+                prop_ltv_label: "按揭成數 LTV (%)",
+                prop_rate_label: "按揭年利率 (%)",
+                prop_yrs_label: "還款年期 (年)",
+                prop_monthly_out: "預計每月供款",
+                prop_down_out: "首期現金支出",
+                prop_stamp_out: "預計從價印花稅",
+                transfer_title: "錢包內部轉賬 / 增值",
+                transfer_sub: "例如由銀行戶口增值八達通，不會重複計算為收入或支出。",
+                from_wallet: "轉出錢包",
+                to_wallet: "轉入錢包",
+                confirm_transfer: "確認錢包轉賬",
+                mob_home: "首頁",
+                mob_ledger: "賬本",
+                mob_goals: "目標",
+                mob_tax: "港府工具",
+                new_tx_title: "新增交易紀錄",
+                loading_sync: "正在同步至 Google 雲端...",
+                loading_auth: "正在連接 Google 帳戶...",
+                loading_csv: "正在批量匯入 CSV 紀錄...",
+                log_now: "立即入賬",
+                sub_overview: "即時港幣現金流、錢包餘額與財富數據分析",
+                sub_ledger: "搜尋、篩選、匯入或匯出您的雲端賬本紀錄",
+                sub_planning: "管理收入目標、消費上限與香港日常固定訂閱支出",
+                sub_hktools: "香港薪俸稅估算、強積金複息及物業按揭印花稅規劃"
+            },
+            "zh-CN": {
+                sign_in: "登录",
+                nav_feat_link: "核心功能",
+                nav_hk_link: "香港税务及置业",
+                nav_sync_link: "Google 云端同步",
+                hero_badge: "零延迟手机及桌面端云端同步",
+                hero_title_1: "您的全方位",
+                hero_title_hk: "香港",
+                hero_title_2: "个人财富管理中心",
+                hero_desc: "轻松追踪港币收支、八达通及银行钱包、固定账单、香港薪俸税、物业印花税及强积金增长——自动永久保存至您的 Google 账号。",
+                continue_google: "使用 Google 账号继续",
+                explore_features: "探索系统功能",
+                trust_1: "银行、八达通、转数快",
+                trust_2: "本地毫秒级缓存",
+                trust_3: "内置薪俸税及强积金",
+                landing_sec_tag: "专为香港打造",
+                landing_sec_title: "补足传统银行 App 的所有盲点",
+                feat_1_t: "多钱包余额与内部转账",
+                feat_1_d: "独立追踪银行、八达通、信用卡、PayMe/转数快及现金余额，支持一键充值转账。",
+                feat_2_t: "每日至每年多维度分析",
+                feat_2_d: "随时切换每日、每周、每月及每年收支趋势，自动换算目标与支出上限。",
+                feat_3_t: "薪俸税、强积金及按揭计算",
+                feat_3_d: "实时对比累进税率与标准税率，并估算强积金复利及香港物业按揭与印花税。",
+                feat_4_t: "Google 云端同步与快捷键",
+                feat_4_d: "支持离线本地缓存及 Google 实时同步、CSV 批量导入导出及 ⌘K 指令面板。",
+                workspace_label: "香港个人财富系统",
+                quick_cmd: "快速指令搜索...",
+                nav_overview: "总览仪表盘",
+                nav_ledger: "收支明细与 CSV",
+                nav_planning: "预算、目标与账单",
+                nav_hktools: "税务、强积金与置业",
+                theme_label: "外观主题",
+                dark_mode: "深色",
+                light_mode: "浅色",
+                lang_label: "语言设置",
+                sync_status: "同步状态",
+                saved: "已实时同步",
+                transfer_btn: "转账",
+                add_entry: "记一笔",
+                period_label: "统计周期",
+                period_daily: "每日",
+                period_weekly: "每周",
+                period_monthly: "每月",
+                period_yearly: "每年",
+                net_balance: "净现金总结余",
+                wallets_title: "港币钱包及账户分布",
+                transfer_wallets: "钱包转账 / 充值",
+                fin_health: "财务健康评分",
+                income_label: "收入",
+                outcome_label: "支出",
+                goals_btn: "目标",
+                tax_btn: "港府工具",
+                cashflow_sub: "收入与支出对比 (HKD)",
+                spending_mix: "分类支出分布",
+                spending_mix_sub: "当前周期主要消费类别占比",
+                quick_tx: "快速记账",
+                type_label: "类型",
+                wallet: "钱包 / 账户",
+                category_label: "消费分类",
+                amount_hkd: "金额 (HK$)",
+                date: "日期",
+                description: "备注说明",
+                save_entry_btn: "立即保存",
+                recent_activity: "最近交易记录",
+                see_all: "查看全部 →",
+                search_ph: "搜索商户、钱包或分类...",
+                all_types: "全部类型",
+                outcomes_only: "仅显示支出",
+                income_only: "仅显示收入",
+                transfers_only: "仅显示转账",
+                all_categories: "全部分类",
+                sample_csv: "模板",
+                import_csv: "导入 CSV",
+                export_csv: "导出 CSV",
+                all_tx_header: "所有交易记录",
+                budget_goal_title: "收入目标、支出上限与储蓄目标",
+                budget_goal_sub: "可自由设定每日、每周、每月或每年目标，永久保存于 Google。",
+                inc_target_sec: "收入目标",
+                inc_freq_label: "收入周期",
+                inc_target_label: "目标收入 (HK$)",
+                out_cap_sec: "支出消费上限",
+                budget_freq_label: "支出周期",
+                outcome_cap_label: "支出上限 (HK$)",
+                goal_name_label: "储蓄目标名称",
+                goal_target_label: "目标金额 (HK$)",
+                save_targets_btn: "保存预算与目标",
+                rec_title: "固定账单与定期订阅",
+                rec_sub: "保存房租、宽带、健身或流媒体订阅，一键入账。",
+                rec_name_ph: "名称 (例如：房租)",
+                add_rec_btn: "+ 添加固定账单",
+                fixed_total_label: "已保存固定账单总计",
+                tax_title: "香港薪俸税计算器",
+                tax_sub: "自动对比累进税率 (2%–17%) 与标准税率 (15% / 16%)",
+                use_ledger_btn: "套用账本收入",
+                tax_inc_label: "全年总入息 (HK$)",
+                tax_mpf_label: "强积金强制性供款 (HK$)",
+                tax_ded_label: "可扣税强积金 / 自愿医保 (HK$)",
+                tax_status_label: "免税额类别",
+                single_allow: "单身 (基本免税额 HK$ 132,000)",
+                married_allow: "已婚合并评税 (HK$ 264,000)",
+                annual_tax_out: "预计全年税款",
+                monthly_tax_out: "建议每月预留税款",
+                mpf_title: "强积金 (MPF) 复利模拟器",
+                mpf_sub: "模拟雇主及雇员供款的长期退休回报",
+                mpf_cur_label: "现有强积金结余 (HK$)",
+                mpf_mo_label: "每月总供款 (HK$)",
+                mpf_ret_label: "预期年回报率 (%)",
+                mpf_yr_label: "投资年限 (年)",
+                mpf_out_label: "预计强积金总结余",
+                prop_title: "香港物业按揭及印花税计算器",
+                prop_sub: "估算每月 H 按 / P 按供款、首期资金及香港从价印花税 (第2标准税率)",
+                prop_price_label: "物业楼价 (HK$)",
+                prop_ltv_label: "按揭成数 LTV (%)",
+                prop_rate_label: "按揭年利率 (%)",
+                prop_yrs_label: "还款年限 (年)",
+                prop_monthly_out: "预计每月供款",
+                prop_down_out: "首期现金支出",
+                prop_stamp_out: "预计从价印花税",
+                transfer_title: "钱包内部转账 / 充值",
+                transfer_sub: "例如由银行账户充值八达通，不会重复计算为收入或支出。",
+                from_wallet: "转出钱包",
+                to_wallet: "转入钱包",
+                confirm_transfer: "确认钱包转账",
+                mob_home: "首页",
+                mob_ledger: "账本",
+                mob_goals: "目标",
+                mob_tax: "港府工具",
+                new_tx_title: "新增交易记录",
+                loading_sync: "正在同步至 Google 云端...",
+                loading_auth: "正在连接 Google 账号...",
+                loading_csv: "正在批量导入 CSV 记录...",
+                log_now: "立即入账",
+                sub_overview: "实时港币现金流、钱包余额与财富数据分析",
+                sub_ledger: "搜索、筛选、导入或导出您的云端账本记录",
+                sub_planning: "管理收入目标、消费上限与香港日常固定订阅支出",
+                sub_hktools: "香港薪俸税估算、强积金复利及物业按揭印花税规划"
+            }
+        };
+
+        let isMobileDevice = false;
+        function detectDeviceMode() {
+            const uaMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            isMobileDevice = uaMobile || window.innerWidth < 768;
+            document.body.classList.toggle('is-mobile', isMobileDevice);
+            const badge = document.getElementById('device-mode-badge');
+            if (badge) badge.textContent = isMobileDevice ? 'Mobile OS' : 'Wealth OS';
+        }
+        detectDeviceMode();
+        window.addEventListener('resize', detectDeviceMode);
+
+        // ==================== FIREBASE INIT ====================
+        const app = initializeApp(firebaseConfig);
+        const db = initializeFirestore(app, {
+            localCache: persistentLocalCache({
+                tabManager: persistentMultipleTabManager(),
+                cacheSizeBytes: CACHE_SIZE_UNLIMITED
+            })
+        });
+        const auth = getAuth(app);
+        setPersistence(auth, browserLocalPersistence);
+        getRedirectResult(auth).catch(() => {});
+
+        let currentUser = null;
+        let unsubTx = null, unsubRec = null, unsubSet = null;
+        let transactions = [], recurringBills = [];
+        let activeTab = 'overview';
+        let selectedPeriod = localStorage.getItem('hkfin_period') || 'monthly';
+        let userSettings = {
+            incomeTarget: 0,
+            incomePeriod: 'monthly',
+            monthlyBudget: 0,
+            budgetPeriod: 'monthly',
+            goalName: 'Emergency Fund',
+            goalTarget: 0,
+            theme: localStorage.getItem('hkfin_theme') || 'light',
+            lang: localStorage.getItem('hkfin_lang') || 'en'
+        };
+        let cashflowChart = null, donutChart = null;
+        let renderScheduled = false;
+
+        const esc = (s) => String(s ?? '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+        const fmtHKD = (n) => `HK$ ${Math.abs(Number(n) || 0).toLocaleString('en-HK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        const localCacheKey = (suffix) => currentUser ? `hkfin_${currentUser.uid}_${suffix}` : null;
+        const t = (key) => (I18N[userSettings.lang] && I18N[userSettings.lang][key]) || I18N.en[key] || key;
+
+        (function bootInstantCache() {
+            const lastUid = localStorage.getItem('hkfin_last_uid');
+            if (!lastUid) return;
+            try {
+                const cachedSet = JSON.parse(localStorage.getItem(`hkfin_${lastUid}_settings`) || 'null');
+                const cachedTx = JSON.parse(localStorage.getItem(`hkfin_${lastUid}_tx`) || '[]');
+                const cachedRec = JSON.parse(localStorage.getItem(`hkfin_${lastUid}_rec`) || '[]');
+                if (cachedSet) userSettings = { ...userSettings, ...cachedSet };
+                if (cachedTx.length) transactions = cachedTx;
+                if (cachedRec.length) recurringBills = cachedRec;
+            } catch {}
+        })();
+
+        function scheduleRefresh() {
+            if (renderScheduled) return;
+            renderScheduled = true;
+            requestAnimationFrame(() => {
+                renderScheduled = false;
+                refreshAllViews();
+            });
+        }
+
+        window.setDesktopTxType = (type) => {
+            document.getElementById('tx-type').value = type;
+            const outBtn = document.getElementById('desk-type-outcome');
+            const incBtn = document.getElementById('desk-type-income');
+            if (type === 'expense') {
+                outBtn.className = 'py-1.5 rounded-lg text-xs font-bold bg-rose-600 text-white shadow-2xs flex items-center justify-center gap-1';
+                incBtn.className = 'py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center justify-center gap-1';
+            } else {
+                incBtn.className = 'py-1.5 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow-2xs flex items-center justify-center gap-1';
+                outBtn.className = 'py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-400 flex items-center justify-center gap-1';
+                document.getElementById('tx-category').value = 'Salary';
+            }
+        };
+
+        window.setMobileTxType = (type) => {
+            document.getElementById('mob-tx-type').value = type;
+            const outBtn = document.getElementById('mob-type-outcome');
+            const incBtn = document.getElementById('mob-type-income');
+            if (type === 'expense') {
+                outBtn.className = 'py-2.5 rounded-xl text-sm font-extrabold bg-rose-600 text-white shadow-2xs flex items-center justify-center gap-1.5';
+                incBtn.className = 'py-2.5 rounded-xl text-sm font-extrabold text-slate-600 dark:text-slate-400 flex items-center justify-center gap-1.5';
+            } else {
+                incBtn.className = 'py-2.5 rounded-xl text-sm font-extrabold bg-emerald-600 text-white shadow-2xs flex items-center justify-center gap-1.5';
+                outBtn.className = 'py-2.5 rounded-xl text-sm font-extrabold text-slate-600 dark:text-slate-400 flex items-center justify-center gap-1.5';
+                document.getElementById('mob-tx-category').value = 'Salary';
+            }
+        };
+
+        function scaleTargetToPeriod(amount, fromPeriod, toPeriod) {
+            const amt = Number(amount) || 0;
+            if (amt <= 0) return 0;
+            const daysMap = { daily: 1, weekly: 7, monthly: 30.4375, yearly: 365 };
+            const dailyAmt = amt / (daysMap[fromPeriod] || 30.4375);
+            return dailyAmt * (daysMap[toPeriod] || 30.4375);
+        }
+
+        function setSelectedPeriod(period) {
+            selectedPeriod = period;
+            localStorage.setItem('hkfin_period', period);
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                const active = btn.dataset.period === period;
+                btn.className = active
+                    ? 'period-btn py-1.5 px-3 rounded-lg text-xs font-bold bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
+                    : 'period-btn py-1.5 px-3 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
+            });
+            const rangeEl = document.getElementById('active-period-range');
+            if (rangeEl) rangeEl.textContent = getPeriodRangeLabel(period);
+            scheduleRefresh();
+        }
+
+        function applyTheme(theme) {
+            const isDark = theme === 'dark';
+            document.documentElement.classList.toggle('dark', isDark);
+            localStorage.setItem('hkfin_theme', theme);
+
+            const dIcon = document.getElementById('theme-icon-desktop');
+            const dText = document.getElementById('theme-text-desktop');
+            const hIcon = document.getElementById('theme-icon-header');
+
+            if (dIcon) dIcon.className = isDark ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon text-indigo-500';
+            if (dText) dText.textContent = isDark ? t('light_mode') : t('dark_mode');
+            if (hIcon) hIcon.className = isDark ? 'fa-solid fa-sun text-amber-400' : 'fa-solid fa-moon text-slate-700';
+
+            if (currentUser) scheduleRefresh();
+        }
+
+        function applyLanguage(lang) {
+            userSettings.lang = I18N[lang] ? lang : 'en';
+            localStorage.setItem('hkfin_lang', userSettings.lang);
+            document.documentElement.lang = userSettings.lang;
+
+            ['landing-lang-select', 'lang-select-desktop', 'lang-select-header'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = userSettings.lang;
+            });
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (I18N[userSettings.lang][key]) el.textContent = I18N[userSettings.lang][key];
+            });
+
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (I18N[userSettings.lang][key]) el.placeholder = I18N[userSettings.lang][key];
+            });
+
+            const rangeEl = document.getElementById('active-period-range');
+            if (rangeEl) rangeEl.textContent = getPeriodRangeLabel(selectedPeriod);
+
+            populateDropdowns();
+            applyTheme(userSettings.theme);
+            updateTabTitles();
+            renderRecurring();
+            calculateHKTax();
+            calculateMPF();
+            calculateProperty();
+            scheduleRefresh();
+        }
+
+        function populateDropdowns() {
+            const lang = userSettings.lang;
+            const walletHtml = WALLETS.map(w => `<option value="${w.val}">${w.labels[lang] || w.labels.en}</option>`).join('');
+            document.querySelectorAll('.wallet-select').forEach(sel => {
+                const prev = sel.value;
+                sel.innerHTML = walletHtml;
+                if (prev) sel.value = prev;
+            });
+            if (document.getElementById('tr-to') && !document.getElementById('tr-to').value) {
+                document.getElementById('tr-to').value = 'Octopus';
+            }
+
+            const catHtml = CATEGORIES.map(c => `<option value="${c.val}">${c.labels[lang] || c.labels.en}</option>`).join('');
+            document.querySelectorAll('.category-select').forEach(sel => {
+                const prev = sel.value;
+                sel.innerHTML = catHtml;
+                if (prev) sel.value = prev;
+            });
+
+            const filterCat = document.getElementById('filter-category');
+            if (filterCat) {
+                const prevF = filterCat.value;
+                filterCat.innerHTML = `<option value="ALL">${t('all_categories')}</option>` + catHtml;
+                if (prevF) filterCat.value = prevF;
+            }
+        }
+
+        window.toggleModal = (id, show) => {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden', !show);
+            el.classList.toggle('flex', show);
+        };
+
+        window.openMobileQuickAdd = (presetType = 'expense') => {
+            setMobileTxType(presetType);
+            document.getElementById('mob-tx-date').value = toLocalISO(new Date());
+            toggleModal('mobile-add-modal', true);
+        };
+
+        window.openTransferModal = () => {
+            document.getElementById('tr-date').value = toLocalISO(new Date());
+            document.getElementById('tr-from').value = 'HSBC / Bank';
+            document.getElementById('tr-to').value = 'Octopus';
+            toggleModal('transfer-modal', true);
+        };
+
+        // ==================== COMMAND PALETTE ====================
+        window.openCommandPalette = () => {
+            toggleModal('cmd-modal', true);
+            const inp = document.getElementById('cmd-input');
+            inp.value = '';
+            renderCommandList('');
+            setTimeout(() => inp.focus(), 50);
+        };
+
+        function renderCommandList(query) {
+            const q = query.toLowerCase();
+            const commands = [
+                { icon: 'fa-plus text-rose-500', label: 'Add New Outcome / Expense', action: () => { toggleModal('cmd-modal', false); openMobileQuickAdd('expense'); } },
+                { icon: 'fa-plus text-emerald-500', label: 'Add New Income', action: () => { toggleModal('cmd-modal', false); openMobileQuickAdd('income'); } },
+                { icon: 'fa-arrow-right-arrow-left text-sky-500', label: 'Transfer Between Wallets (Bank → Octopus)', action: () => { toggleModal('cmd-modal', false); openTransferModal(); } },
+                { icon: 'fa-chart-pie text-teal-500', label: 'Go to Overview Dashboard', action: () => { toggleModal('cmd-modal', false); switchTab('overview'); } },
+                { icon: 'fa-receipt text-indigo-500', label: 'Go to Transactions & CSV Ledger', action: () => { toggleModal('cmd-modal', false); switchTab('ledger'); } },
+                { icon: 'fa-bullseye text-purple-500', label: 'Go to Budgets, Goals & Recurring Bills', action: () => { toggleModal('cmd-modal', false); switchTab('planning'); } },
+                { icon: 'fa-landmark text-amber-500', label: 'Go to HK Tax, MPF & Mortgage Lab', action: () => { toggleModal('cmd-modal', false); switchTab('hktools'); } },
+                { icon: 'fa-circle-half-stroke text-slate-400', label: 'Toggle Light / Dark Theme', action: () => { toggleModal('cmd-modal', false); saveSettings({ theme: userSettings.theme === 'dark' ? 'light' : 'dark' }, true); } }
+            ];
+            const filtered = commands.filter(c => c.label.toLowerCase().includes(q));
+            const listEl = document.getElementById('cmd-list');
+            listEl.innerHTML = filtered.map((c, idx) => `
+                <button type="button" data-cmd-idx="${idx}" class="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 flex items-center gap-3 text-xs font-bold text-slate-800 dark:text-slate-100">
+                    <i class="fa-solid ${c.icon} w-4 text-center"></i>
+                    <span>${esc(c.label)}</span>
+                </button>
+            `).join('');
+            listEl.querySelectorAll('button').forEach((btn, idx) => {
+                btn.onclick = filtered[idx].action;
+            });
+        }
+
+        function toast(msg, isError = false) {
+            const el = document.createElement('div');
+            el.className = `fixed top-4 left-1/2 -translate-x-1/2 ${isError ? 'bg-rose-600' : 'bg-slate-900/95 dark:bg-slate-800/95'} backdrop-blur-md text-white px-4 py-2 rounded-2xl shadow-2xl border border-white/15 z-[300] text-xs font-bold flex items-center gap-2 fade-up max-w-[90vw]`;
+            el.innerHTML = `<i class="fa-solid ${isError ? 'fa-circle-exclamation' : 'fa-circle-check text-emerald-400'}"></i><span class="truncate">${esc(msg)}</span>`;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 2200);
+        }
+
+        let pendingWrites = 0;
+        function bumpSync(delta) {
+            pendingWrites = Math.max(0, pendingWrites + delta);
+            const el = document.getElementById('sync-indicator');
+            const dot = document.getElementById('mobile-sync-dot');
+            if (pendingWrites > 0) {
+                if (el) { el.className = 'text-amber-500 flex items-center gap-1.5'; el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span> Syncing`; }
+                if (dot) dot.className = 'md:hidden w-2 h-2 rounded-full bg-amber-400 animate-ping';
+            } else {
+                if (el) { el.className = 'text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5'; el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> <span>${t('saved')}</span>`; }
+                if (dot) dot.className = 'md:hidden w-2 h-2 rounded-full bg-emerald-500';
+            }
+        }
+
+        function updateTabTitles() {
+            const map = {
+                overview: [t('nav_overview'), t('sub_overview')],
+                ledger: [t('nav_ledger'), t('sub_ledger')],
+                planning: [t('nav_planning'), t('sub_planning')],
+                hktools: [t('nav_hktools'), t('sub_hktools')]
+            };
+            document.getElementById('page-title').textContent = map[activeTab][0];
+            document.getElementById('page-subtitle').textContent = map[activeTab][1];
+        }
+
+        window.switchTab = (tabName) => {
+            activeTab = tabName;
+            document.querySelectorAll('.tab-view').forEach(v => v.classList.add('hidden'));
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                const active = b.dataset.tab === tabName;
+                b.className = active
+                    ? 'nav-btn nav-active w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] font-semibold'
+                    : 'nav-btn text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-[13px] font-semibold';
+            });
+            document.querySelectorAll('.mob-nav-btn').forEach(b => {
+                const active = b.dataset.tab === tabName;
+                b.classList.toggle('text-emerald-600', active);
+                b.classList.toggle('dark:text-emerald-400', active);
+                b.classList.toggle('text-slate-400', !active);
+            });
+            updateTabTitles();
+        };
+
+        // ==================== AUTH & REAL-TIME LISTENERS ====================
+        onAuthStateChanged(auth, (user) => {
+            hideLoader();
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('hkfin_last_uid', user.uid);
+                document.getElementById('user-display').textContent = user.displayName || 'Google User';
+                document.getElementById('user-email').textContent = user.email || '';
+                if (user.photoURL) {
+                    const img = document.getElementById('user-avatar');
+                    img.src = user.photoURL;
+                    img.classList.remove('hidden');
+                }
+                document.getElementById('landing-page').classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+
+                syncSettingsInputs();
+                applyLanguage(userSettings.lang);
+                subscribeAllCollections();
+            } else {
+                currentUser = null;
+                localStorage.removeItem('hkfin_last_uid');
+                if (unsubTx) unsubTx();
+                if (unsubRec) unsubRec();
+                if (unsubSet) unsubSet();
+                transactions = []; recurringBills = [];
+                document.getElementById('landing-page').classList.remove('hidden');
+                document.getElementById('app-container').classList.add('hidden');
+            }
+        });
+
+        async function handleLogin() {
+            showLoader(t('loading_auth'));
+            const provider = new GoogleAuthProvider();
+            provider.setCustomParameters({ prompt: 'select_account' });
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (e) {
+                if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment') {
+                    await signInWithRedirect(auth, provider);
+                } else {
+                    hideLoader();
+                    if (e.code !== 'auth/popup-closed-by-user') toast("Sign-in error: " + e.message, true);
+                }
+            }
+        }
+
+        function syncSettingsInputs() {
+            document.getElementById('input-income-target').value = userSettings.incomeTarget || '';
+            document.getElementById('input-income-period').value = userSettings.incomePeriod || 'monthly';
+            document.getElementById('input-monthly-budget').value = userSettings.monthlyBudget || '';
+            document.getElementById('input-budget-period').value = userSettings.budgetPeriod || 'monthly';
+            document.getElementById('input-goal-name').value = userSettings.goalName || '';
+            document.getElementById('input-goal-target').value = userSettings.goalTarget || '';
+        }
+
+        function saveSettings(partial, silent = false) {
+            userSettings = { ...userSettings, ...partial };
+            if (partial.theme) applyTheme(partial.theme);
+            if (partial.lang) applyLanguage(partial.lang);
+            if (!currentUser) return;
+
+            localStorage.setItem(localCacheKey('settings'), JSON.stringify(userSettings));
+            scheduleRefresh();
+            if (!silent) toast(t('saved'));
+
+            bumpSync(1);
+            setDoc(doc(db, 'users', currentUser.uid, 'settings', 'preferences'), userSettings, { merge: true })
+                .catch(e => toast(e.message, true))
+                .finally(() => bumpSync(-1));
+        }
+
+        function subscribeAllCollections() {
+            if (!currentUser) return;
+            const uid = currentUser.uid;
+
+            unsubSet = onSnapshot(doc(db, 'users', uid, 'settings', 'preferences'), { includeMetadataChanges: true }, (snap) => {
+                if (snap.exists()) {
+                    userSettings = { ...userSettings, ...snap.data() };
+                    localStorage.setItem(localCacheKey('settings'), JSON.stringify(userSettings));
+                    syncSettingsInputs();
+                    applyLanguage(userSettings.lang);
+                }
+            });
+
+            unsubTx = onSnapshot(collection(db, 'users', uid, 'transactions'), { includeMetadataChanges: true }, (snap) => {
+                const list = [];
+                snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+                list.sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.createdMs || 0) - (a.createdMs || 0));
+                transactions = list;
+                localStorage.setItem(localCacheKey('tx'), JSON.stringify(transactions));
+                scheduleRefresh();
+            });
+
+            unsubRec = onSnapshot(collection(db, 'users', uid, 'recurring'), { includeMetadataChanges: true }, (snap) => {
+                const list = [];
+                snap.forEach(d => list.push({ id: d.id, ...d.data() }));
+                recurringBills = list;
+                localStorage.setItem(localCacheKey('rec'), JSON.stringify(recurringBills));
+                renderRecurring();
+            });
+        }
+
+        function createTransaction(txObj) {
+            if (!currentUser) return;
+            bumpSync(1);
+            addDoc(collection(db, 'users', currentUser.uid, 'transactions'), {
+                ...txObj,
+                createdMs: Date.now(),
+                createdAt: serverTimestamp()
+            })
+            .catch(e => toast(e.message, true))
+            .finally(() => bumpSync(-1));
+        }
+
+        window.deleteTx = (id) => {
+            if (!currentUser) return;
+            bumpSync(1);
+            deleteDoc(doc(db, 'users', currentUser.uid, 'transactions', id))
+                .catch(e => toast(e.message, true))
+                .finally(() => bumpSync(-1));
+            toast("Deleted");
+        };
+
+        window.logRecurringNow = (id) => {
+            const bill = recurringBills.find(b => b.id === id);
+            if (!bill) return;
+            createTransaction({
+                type: 'expense',
+                category: 'Housing',
+                account: 'HSBC / Bank',
+                amount: Number(bill.amount),
+                date: toLocalISO(new Date()),
+                description: `${bill.name} (${t(`period_${bill.frequency || 'monthly'}`)})`
+            });
+            toast(`${bill.name} (${fmtHKD(bill.amount)})`);
+        };
+
+        window.deleteRecurring = (id) => {
+            if (!currentUser) return;
+            bumpSync(1);
+            deleteDoc(doc(db, 'users', currentUser.uid, 'recurring', id))
+                .catch(e => toast(e.message, true))
+                .finally(() => bumpSync(-1));
+            toast("Removed");
+        };
+
+        // ==================== RENDERING ====================
+        function refreshAllViews() {
+            let totalInc = 0, totalExp = 0, periodInc = 0, periodExp = 0;
+            const walletBalances = {};
+            WALLETS.forEach(w => { walletBalances[w.val] = 0; });
+
+            const catTotals = {};
+
+            for (let i = 0; i < transactions.length; i++) {
+                const tx = transactions[i];
+                const amt = Number(tx.amount) || 0;
+                const inPeriod = isDateInPeriod(tx.date, selectedPeriod);
+
+                if (tx.type === 'transfer') {
+                    if (tx.fromAccount && walletBalances[tx.fromAccount] !== undefined) walletBalances[tx.fromAccount] -= amt;
+                    if (tx.toAccount && walletBalances[tx.toAccount] !== undefined) walletBalances[tx.toAccount] += amt;
+                    continue;
+                }
+
+                const acc = tx.account || 'HSBC / Bank';
+                if (tx.type === 'income') {
+                    totalInc += amt;
+                    if (inPeriod) periodInc += amt;
+                    if (walletBalances[acc] !== undefined) walletBalances[acc] += amt;
+                    else walletBalances['HSBC / Bank'] += amt;
+                } else {
+                    totalExp += amt;
+                    if (inPeriod) {
+                        periodExp += amt;
+                        const cat = tx.category && CATEGORIES.some(c => c.val === tx.category) ? tx.category : 'Other';
+                        catTotals[cat] = (catTotals[cat] || 0) + amt;
+                    }
+                    if (walletBalances[acc] !== undefined) walletBalances[acc] -= amt;
+                    else walletBalances['HSBC / Bank'] -= amt;
+                }
+            }
+
+            // Render Wallet Balances Grid
+            const walletGrid = document.getElementById('wallet-balances-grid');
+            if (walletGrid) {
+                walletGrid.innerHTML = WALLETS.map(w => {
+                    const bal = walletBalances[w.val] || 0;
+                    const neg = bal < 0;
+                    const lbl = (w.labels[userSettings.lang] || w.labels.en).replace(/^[^\s]+\s/, '');
+                    return `
+                        <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 flex flex-col justify-between">
+                            <div class="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300">
+                                <span class="truncate">${w.icon} ${esc(lbl)}</span>
+                            </div>
+                            <div class="mono text-sm font-extrabold mt-1.5 ${neg ? 'text-rose-500' : 'text-slate-900 dark:text-white'}">${neg ? '-' : ''}${fmtHKD(bal)}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const pName = t(`period_${selectedPeriod}`);
+            document.getElementById('kpi-label-income').textContent = `${pName} ${t('income_label')}`;
+            document.getElementById('kpi-label-outcome').textContent = `${pName} ${t('outcome_label')}`;
+            document.getElementById('chart-cashflow-title').textContent = `${pName} ${t('income_label')} & ${t('outcome_label')}`;
+
+            const balance = totalInc - totalExp;
+            const savRate = totalInc > 0 ? Math.max(0, ((balance / totalInc) * 100)) : 0;
+            const balText = (balance < 0 ? '-' : '') + fmtHKD(balance);
+
+            document.getElementById('hero-balance').textContent = balText;
+            document.getElementById('hero-savings-badge').textContent = `${savRate.toFixed(1)}% Saved`;
+            document.getElementById('hero-all-inc').textContent = `${t('income_label')}: ${fmtHKD(totalInc)}`;
+            document.getElementById('hero-all-exp').textContent = `${t('outcome_label')}: ${fmtHKD(totalExp)}`;
+
+            const savedIncTarget = Number(userSettings.incomeTarget) || 0;
+            const savedIncPeriod = userSettings.incomePeriod || 'monthly';
+            const scaledIncTarget = scaleTargetToPeriod(savedIncTarget, savedIncPeriod, selectedPeriod);
+
+            const savedBudgetAmt = Number(userSettings.monthlyBudget) || 0;
+            const savedBudgetPeriod = userSettings.budgetPeriod || 'monthly';
+            const scaledOutCap = scaleTargetToPeriod(savedBudgetAmt, savedBudgetPeriod, selectedPeriod);
+
+            const heroIncPct = scaledIncTarget > 0 ? Math.min(100, (periodInc / scaledIncTarget) * 100) : 0;
+            document.getElementById('hero-inc-target-lbl').textContent = `${pName} ${t('inc_target_sec')}`;
+            document.getElementById('hero-inc-target-pct').textContent = `${heroIncPct.toFixed(0)}%`;
+            document.getElementById('hero-inc-target-bar').style.width = `${heroIncPct}%`;
+            document.getElementById('hero-inc-target-amt').textContent = `${fmtHKD(periodInc)} / ${fmtHKD(scaledIncTarget)}`;
+
+            const heroOutPct = scaledOutCap > 0 ? Math.min(100, (periodExp / scaledOutCap) * 100) : 0;
+            document.getElementById('hero-out-cap-lbl').textContent = `${pName} ${t('outcome_cap_label')}`;
+            document.getElementById('hero-out-cap-pct').textContent = `${heroOutPct.toFixed(0)}%`;
+            document.getElementById('hero-out-cap-bar').style.width = `${heroOutPct}%`;
+            document.getElementById('hero-out-cap-amt').textContent = `${fmtHKD(periodExp)} / ${fmtHKD(scaledOutCap)}`;
+
+            document.getElementById('kpi-month-income').textContent = `+${fmtHKD(periodInc)}`;
+            document.getElementById('kpi-inc-sub').textContent = `${t('inc_target_sec')}: ${fmtHKD(scaledIncTarget)}`;
+            document.getElementById('kpi-month-expense').textContent = `-${fmtHKD(periodExp)}`;
+            document.getElementById('kpi-out-sub').textContent = `${t('outcome_cap_label')}: ${fmtHKD(scaledOutCap)}`;
+
+            const scoreEl = document.getElementById('kpi-health-score');
+            const labelEl = document.getElementById('kpi-health-label');
+            if (transactions.length === 0) {
+                scoreEl.textContent = '-- / 100';
+                labelEl.textContent = '--';
+            } else {
+                let score = 50 + Math.min(25, savRate * 0.7);
+                if (balance > 0) score += 10;
+                if (scaledOutCap > 0 && periodExp <= scaledOutCap) score += 8;
+                if (scaledIncTarget > 0 && periodInc >= scaledIncTarget) score += 7;
+                score = Math.min(100, Math.max(15, Math.round(score)));
+                scoreEl.textContent = `${score} / 100`;
+                labelEl.textContent = score >= 85 ? 'Grade A+ (Optimal)' : score >= 65 ? 'Grade B+ (Healthy)' : 'Grade C (Watch Spend)';
+            }
+
+            let actualInIncPeriod = 0;
+            transactions.forEach(tx => {
+                if (tx.type === 'income' && isDateInPeriod(tx.date, savedIncPeriod)) {
+                    actualInIncPeriod += Number(tx.amount) || 0;
+                }
+            });
+            const iPct = savedIncTarget > 0 ? Math.min(100, (actualInIncPeriod / savedIncTarget) * 100) : 0;
+            document.getElementById('plan-inc-label').textContent = `${t(`period_${savedIncPeriod}`)} ${t('inc_target_sec')}`;
+            document.getElementById('plan-inc-text').textContent = `${fmtHKD(actualInIncPeriod)} / ${fmtHKD(savedIncTarget)}`;
+            document.getElementById('plan-inc-bar').style.width = `${iPct}%`;
+
+            let actualInBudgetPeriod = 0;
+            transactions.forEach(tx => {
+                if (tx.type === 'expense' && isDateInPeriod(tx.date, savedBudgetPeriod)) {
+                    actualInBudgetPeriod += Number(tx.amount) || 0;
+                }
+            });
+            const bPct = savedBudgetAmt > 0 ? Math.min(100, (actualInBudgetPeriod / savedBudgetAmt) * 100) : 0;
+            document.getElementById('plan-budget-label').textContent = `${t(`period_${savedBudgetPeriod}`)} ${t('outcome_cap_label')}`;
+            document.getElementById('plan-budget-text').textContent = `${fmtHKD(actualInBudgetPeriod)} / ${fmtHKD(savedBudgetAmt)}`;
+            const bBar = document.getElementById('plan-budget-bar');
+            bBar.style.width = `${bPct}%`;
+            bBar.className = bPct > 90 ? 'bg-rose-500 h-2 rounded-full transition-all duration-300' : 'bg-teal-500 h-2 rounded-full transition-all duration-300';
+
+            const gTarget = Number(userSettings.goalTarget) || 0;
+            const gPct = gTarget > 0 ? Math.min(100, (Math.max(0, balance) / gTarget) * 100) : 0;
+            document.getElementById('plan-goal-label').textContent = `${userSettings.goalName || 'Goal'} (${fmtHKD(Math.max(0, balance))} / ${fmtHKD(gTarget)})`;
+            document.getElementById('plan-goal-text').textContent = `${gPct.toFixed(1)}%`;
+            document.getElementById('plan-goal-bar').style.width = `${gPct}%`;
+
+            const unitSuffix = { daily: '/day', weekly: '/wk', monthly: '/mo', yearly: '/yr' }[selectedPeriod];
+            document.getElementById('burn-rate-pill').textContent = `${t('outcome_label')}: HK$ ${Math.round(periodExp).toLocaleString()}${unitSuffix}`;
+
+            renderRecentAndFullLists();
+            renderCharts(catTotals, periodExp);
+        }
+
+        function getCategoryLabel(catVal) {
+            const found = CATEGORIES.find(c => c.val === catVal);
+            if (!found) return catVal || 'Other';
+            return found.labels[userSettings.lang] || found.labels.en;
+        }
+
+        function renderTxRow(tx, compact = false) {
+            const isTransfer = tx.type === 'transfer';
+            const isInc = tx.type === 'income';
+            const iconClass = isTransfer
+                ? 'text-sky-600 dark:text-sky-400 bg-sky-500/10 border border-sky-500/20'
+                : isInc
+                    ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
+                    : 'text-rose-600 dark:text-rose-400 bg-rose-500/10 border border-rose-500/20';
+            const iconName = isTransfer ? 'fa-arrow-right-arrow-left' : isInc ? 'fa-arrow-up' : 'fa-arrow-down';
+            const amtColor = isTransfer ? 'text-sky-600 dark:text-sky-400' : isInc ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400';
+            const sign = isTransfer ? '⇄ ' : isInc ? '+' : '-';
+            const subBadge = isTransfer
+                ? `${esc(tx.fromAccount || '')} → ${esc(tx.toAccount || '')}`
+                : `${esc(tx.account || 'Bank')} • ${esc(getCategoryLabel(tx.category))}`;
+
+            return `
+                <div class="flex items-center justify-between py-3 px-2.5 sm:px-3.5 hover:bg-slate-50 dark:hover:bg-slate-800/40 rounded-2xl transition">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-9 h-9 rounded-xl ${iconClass} flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid ${iconName} text-xs"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="text-xs sm:text-[13px] font-bold text-slate-900 dark:text-slate-100 truncate">${esc(tx.description)}</div>
+                            <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
+                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${subBadge}</span>
+                                <span class="text-[11px] text-slate-400 mono">${esc(tx.date || '')}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2.5 flex-shrink-0 ml-2">
+                        <span class="text-xs sm:text-sm font-extrabold mono ${amtColor}">${sign}${fmtHKD(tx.amount)}</span>
+                        ${compact ? '' : `<button onclick="window.deleteTx('${tx.id}')" class="w-8 h-8 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 flex items-center justify-center"><i class="fa-solid fa-trash-can text-xs"></i></button>`}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRecentAndFullLists() {
+            const recentEl = document.getElementById('recent-tx-list');
+            recentEl.innerHTML = transactions.length
+                ? transactions.slice(0, 6).map(t => renderTxRow(t, true)).join('')
+                : `<div class="py-12 text-center text-xs text-slate-400">No entries yet — click Add Entry to begin</div>`;
+
+            const q = document.getElementById('search-tx').value.toLowerCase();
+            const tp = document.getElementById('filter-type').value;
+            const cat = document.getElementById('filter-category').value;
+
+            const filtered = transactions.filter(t => {
+                if (tp !== 'ALL' && t.type !== tp) return false;
+                if (cat !== 'ALL' && (t.category || 'Other') !== cat) return false;
+                if (q && !(t.description || '').toLowerCase().includes(q) && !(t.account || '').toLowerCase().includes(q) && !(t.category || '').toLowerCase().includes(q)) return false;
+                return true;
+            });
+
+            document.getElementById('ledger-count').textContent = `${filtered.length}`;
+            document.getElementById('full-tx-list').innerHTML = filtered.length
+                ? filtered.slice(0, 200).map(t => renderTxRow(t, false)).join('')
+                : `<div class="py-14 text-center text-xs text-slate-400">No matching transactions</div>`;
+        }
+
+        function buildTimeBuckets() {
+            const now = new Date();
+            const buckets = [];
+            if (selectedPeriod === 'daily') {
+                for (let i = 6; i >= 0; i--) {
+                    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+                    const iso = toLocalISO(d);
+                    buckets.push({ label: iso.slice(5), match: (dt) => String(dt || '').trim().slice(0, 10) === iso });
+                }
+            } else if (selectedPeriod === 'weekly') {
+                for (let i = 5; i >= 0; i--) {
+                    const ref = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i * 7);
+                    const { startStr, endStr } = getLocalWeekBounds(ref);
+                    buckets.push({
+                        label: startStr.slice(5),
+                        match: (dt) => {
+                            const clean = String(dt || '').trim().slice(0, 10);
+                            return clean >= startStr && clean <= endStr;
+                        }
+                    });
+                }
+            } else if (selectedPeriod === 'yearly') {
+                for (let i = 4; i >= 0; i--) {
+                    const yr = String(now.getFullYear() - i);
+                    buckets.push({ label: yr, match: (dt) => String(dt || '').trim().startsWith(yr) });
+                }
+            } else {
+                for (let i = 5; i >= 0; i--) {
+                    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    const ym = toLocalISO(d).slice(0, 7);
+                    buckets.push({ label: ym.slice(5), match: (dt) => String(dt || '').trim().startsWith(ym) });
+                }
+            }
+            return buckets;
+        }
+
+        function renderCharts(catTotals, periodExp) {
+            const isDark = userSettings.theme === 'dark';
+            const gridColor = isDark ? 'rgba(51, 65, 85, 0.3)' : 'rgba(226, 232, 240, 0.65)';
+            const tickColor = isDark ? '#94a3b8' : '#64748b';
+
+            const buckets = buildTimeBuckets();
+            const labels = buckets.map(b => b.label);
+            const incSeries = buckets.map(b => transactions.filter(t => t.type === 'income' && b.match(t.date)).reduce((s, t) => s + Number(t.amount), 0));
+            const expSeries = buckets.map(b => transactions.filter(t => t.type === 'expense' && b.match(t.date)).reduce((s, t) => s + Number(t.amount), 0));
+
+            if (!cashflowChart) {
+                const cfCtx = document.getElementById('cashflow-chart').getContext('2d');
+                cashflowChart = new Chart(cfCtx, {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [
+                            { label: t('income_label'), data: incSeries, backgroundColor: '#10b981', borderRadius: 8, barPercentage: 0.72, categoryPercentage: 0.68 },
+                            { label: t('outcome_label'), data: expSeries, backgroundColor: '#f43f5e', borderRadius: 8, barPercentage: 0.72, categoryPercentage: 0.68 }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: { duration: 180 },
+                        plugins: { legend: { position: 'top', align: 'end', labels: { color: tickColor, usePointStyle: true, pointStyle: 'circle', boxWidth: 8, font: { size: 11, weight: 'bold' } } } },
+                        scales: {
+                            y: { beginAtZero: true, border: { display: false }, grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } },
+                            x: { border: { display: false }, grid: { display: false }, ticks: { color: tickColor, font: { size: 11 } } }
+                        }
+                    }
+                });
+            } else {
+                cashflowChart.data.labels = labels;
+                cashflowChart.data.datasets[0].label = t('income_label');
+                cashflowChart.data.datasets[0].data = incSeries;
+                cashflowChart.data.datasets[1].label = t('outcome_label');
+                cashflowChart.data.datasets[1].data = expSeries;
+                cashflowChart.options.plugins.legend.labels.color = tickColor;
+                cashflowChart.options.scales.y.grid.color = gridColor;
+                cashflowChart.options.scales.y.ticks.color = tickColor;
+                cashflowChart.options.scales.x.ticks.color = tickColor;
+                cashflowChart.update('none');
+            }
+
+            const sortedCats = Object.entries(catTotals).sort((a, b) => b[1] - a[1]);
+            const hasData = sortedCats.length > 0 && periodExp > 0;
+            const dLabels = hasData ? sortedCats.map(([k]) => getCategoryLabel(k)) : ['No Outcome Data'];
+            const dData = hasData ? sortedCats.map(([, v]) => v) : [1];
+            const dColors = hasData
+                ? sortedCats.map(([k]) => (CATEGORIES.find(c => c.val === k)?.color || '#64748b'))
+                : [isDark ? '#1e293b' : '#e2e8f0'];
+            const dBorder = isDark ? '#0C111E' : '#ffffff';
+
+            if (!donutChart) {
+                const dCtx = document.getElementById('donut-chart').getContext('2d');
+                donutChart = new Chart(dCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: dLabels,
+                        datasets: [{ data: dData, backgroundColor: dColors, borderWidth: 3, borderColor: dBorder }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: { duration: 180 },
+                        cutout: '74%',
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            } else {
+                donutChart.data.labels = dLabels;
+                donutChart.data.datasets[0].data = dData;
+                donutChart.data.datasets[0].backgroundColor = dColors;
+                donutChart.data.datasets[0].borderColor = dBorder;
+                donutChart.update('none');
+            }
+
+            const topListEl = document.getElementById('top-categories-list');
+            if (!hasData) {
+                topListEl.innerHTML = `<div class="text-center text-xs text-slate-400 py-1">—</div>`;
+            } else {
+                topListEl.innerHTML = sortedCats.slice(0, 3).map(([k, val]) => {
+                    const color = CATEGORIES.find(c => c.val === k)?.color || '#64748b';
+                    const pct = Math.round((val / periodExp) * 100);
+                    return `
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1.5 truncate">
+                                <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:${color}"></span>${esc(getCategoryLabel(k))}
+                            </span>
+                            <span class="mono font-extrabold text-slate-900 dark:text-white ml-2">HK$ ${val.toLocaleString()} (${pct}%)</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        function renderRecurring() {
+            const el = document.getElementById('recurring-list');
+            const total = recurringBills.reduce((s, b) => s + Number(b.amount || 0), 0);
+            document.getElementById('recurring-total').textContent = fmtHKD(total);
+            el.innerHTML = recurringBills.length ? recurringBills.map(b => {
+                const freqLabel = t(`period_${b.frequency || 'monthly'}`);
+                return `
+                <div class="py-2.5 flex items-center justify-between gap-2">
+                    <div>
+                        <div class="text-xs font-bold text-slate-800 dark:text-slate-100">${esc(b.name)}</div>
+                        <div class="text-[11px] text-slate-500 dark:text-slate-400">${esc(freqLabel)} • <span class="mono font-semibold">${fmtHKD(b.amount)}</span></div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="window.logRecurringNow('${b.id}')" class="px-2.5 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold">${t('log_now')}</button>
+                        <button onclick="window.deleteRecurring('${b.id}')" class="p-2 rounded-lg text-slate-400 hover:text-rose-500 text-xs"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+            `}).join('') : `<div class="py-6 text-center text-xs text-slate-400">—</div>`;
+        }
+
+        // ==================== HK TAX, MPF & PROPERTY ====================
+        window.prefillTaxFromLedger = () => {
+            const totalInc = transactions.filter(t => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0);
+            if (totalInc > 0) {
+                document.getElementById('tax-income').value = Math.round(totalInc);
+                calculateHKTax();
+                toast("Loaded");
+            }
+        };
+
+        function calculateHKTax() {
+            const income = Number(document.getElementById('tax-income').value) || 0;
+            const mpf = Number(document.getElementById('tax-mpf').value) || 0;
+            const ded = Number(document.getElementById('tax-deductions').value) || 0;
+            const allowance = Number(document.getElementById('tax-status').value) || 132000;
+
+            const netIncome = Math.max(0, income - mpf - ded);
+            const netChargeable = Math.max(0, netIncome - allowance);
+
+            let progTax = 0, rem = netChargeable;
+            for (const [cap, rate] of [[50000, 0.02], [50000, 0.06], [50000, 0.10], [50000, 0.14]]) {
+                const slice = Math.min(rem, cap);
+                progTax += slice * rate;
+                rem -= slice;
+            }
+            if (rem > 0) progTax += rem * 0.17;
+
+            const stdTax = netIncome <= 5000000 ? netIncome * 0.15 : (5000000 * 0.15) + ((netIncome - 5000000) * 0.16);
+            const finalTax = Math.min(progTax, stdTax);
+
+            document.getElementById('tax-result-annual').textContent = `HK$ ${Math.round(finalTax).toLocaleString()}`;
+            document.getElementById('tax-result-monthly').textContent = `HK$ ${Math.round(finalTax / 12).toLocaleString()}`;
+            document.getElementById('tax-method-note').textContent = stdTax < progTax
+                ? (userSettings.lang === 'en' ? 'Capped at Hong Kong Standard Rate (15%/16%).' : '按香港標準稅率 (15%/16%) 計算上限。')
+                : (userSettings.lang === 'en' ? `Progressive rate on Net Chargeable Income: HK$ ${netChargeable.toLocaleString()}` : `按應課稅入息實額 HK$ ${netChargeable.toLocaleString()} 以累進稅率計算`);
+        }
+
+        function calculateMPF() {
+            const p = Number(document.getElementById('mpf-current').value) || 0;
+            const m = Number(document.getElementById('mpf-monthly').value) || 0;
+            const r = (Number(document.getElementById('mpf-return').value) || 0) / 100 / 12;
+            const n = (Number(document.getElementById('mpf-years').value) || 1) * 12;
+
+            const fv = r > 0 ? p * Math.pow(1 + r, n) + m * ((Math.pow(1 + r, n) - 1) / r) : p + m * n;
+            const contributed = p + m * n;
+            document.getElementById('mpf-result-total').textContent = `HK$ ${Math.round(fv).toLocaleString()}`;
+            document.getElementById('mpf-result-breakdown').textContent = `HK$ ${Math.round(contributed).toLocaleString()} + HK$ ${Math.round(Math.max(0, fv - contributed)).toLocaleString()}`;
+        }
+
+        function calculateProperty() {
+            const price = Number(document.getElementById('prop-price').value) || 0;
+            const ltv = (Number(document.getElementById('prop-ltv').value) || 0) / 100;
+            const rate = (Number(document.getElementById('prop-rate').value) || 0) / 100 / 12;
+            const n = (Number(document.getElementById('prop-years').value) || 1) * 12;
+
+            const loan = price * ltv;
+            const down = price - loan;
+            const monthly = rate > 0 ? loan * (rate * Math.pow(1 + rate, n)) / (Math.pow(1 + rate, n) - 1) : loan / n;
+
+            // HK Scale 2 Ad Valorem Stamp Duty Brackets
+            let stamp = 0;
+            if (price <= 3000000) stamp = 100;
+            else if (price <= 3528240) stamp = 100 + (price - 3000000) * 0.10;
+            else if (price <= 4500000) stamp = price * 0.015;
+            else if (price <= 4935480) stamp = 67500 + (price - 4500000) * 0.10;
+            else if (price <= 6000000) stamp = price * 0.0225;
+            else if (price <= 6642860) stamp = 135000 + (price - 6000000) * 0.10;
+            else if (price <= 9000000) stamp = price * 0.03;
+            else if (price <= 10080000) stamp = 270000 + (price - 9000000) * 0.10;
+            else if (price <= 20000000) stamp = price * 0.0375;
+            else if (price <= 21739120) stamp = 750000 + (price - 20000000) * 0.10;
+            else stamp = price * 0.0425;
+
+            document.getElementById('prop-res-monthly').textContent = `HK$ ${Math.round(monthly).toLocaleString()}`;
+            document.getElementById('prop-res-down').textContent = `HK$ ${Math.round(down).toLocaleString()}`;
+            document.getElementById('prop-res-stamp').textContent = `HK$ ${Math.round(stamp).toLocaleString()}`;
+        }
+
+        // ==================== EVENT WIRING ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            const todayISO = toLocalISO(new Date());
+            document.getElementById('tx-date').value = todayISO;
+            document.getElementById('mob-tx-date').value = todayISO;
+
+            applyLanguage(userSettings.lang);
+            applyTheme(userSettings.theme);
+            setSelectedPeriod(selectedPeriod);
+
+            // Keyboard shortcuts (⌘K / Ctrl+K & Escape)
+            document.addEventListener('keydown', (e) => {
+                if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                    e.preventDefault();
+                    if (currentUser) openCommandPalette();
+                } else if (e.key === 'Escape') {
+                    toggleModal('cmd-modal', false);
+                    toggleModal('mobile-add-modal', false);
+                    toggleModal('transfer-modal', false);
+                }
+            });
+            document.getElementById('cmd-input').addEventListener('input', (e) => renderCommandList(e.target.value));
+
+            // Smart auto-category detection on description input
+            document.getElementById('tx-desc').addEventListener('input', (e) => {
+                const detected = autoDetectCategory(e.target.value, document.getElementById('tx-type').value);
+                if (detected) document.getElementById('tx-category').value = detected;
+            });
+            document.getElementById('mob-tx-desc').addEventListener('input', (e) => {
+                const detected = autoDetectCategory(e.target.value, document.getElementById('mob-tx-type').value);
+                if (detected) document.getElementById('mob-tx-category').value = detected;
+            });
+
+            document.getElementById('btn-login-top').addEventListener('click', handleLogin);
+            document.getElementById('btn-login-main').addEventListener('click', handleLogin);
+            document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
+            document.getElementById('btn-logout-mobile').addEventListener('click', () => signOut(auth));
+
+            const toggleTheme = () => {
+                const next = userSettings.theme === 'dark' ? 'light' : 'dark';
+                saveSettings({ theme: next }, true);
+            };
+            document.getElementById('btn-theme-desktop').addEventListener('click', toggleTheme);
+            document.getElementById('btn-theme-header').addEventListener('click', toggleTheme);
+
+            ['landing-lang-select', 'lang-select-desktop', 'lang-select-header'].forEach(id => {
+                document.getElementById(id).addEventListener('change', (e) => {
+                    saveSettings({ lang: e.target.value }, true);
+                });
+            });
+
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.addEventListener('click', () => setSelectedPeriod(btn.dataset.period));
+            });
+
+            document.querySelectorAll('.nav-btn, .mob-nav-btn').forEach(btn => {
+                btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+            });
+
+            document.getElementById('tx-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const txType = document.getElementById('tx-type').value;
+                createTransaction({
+                    type: txType,
+                    category: document.getElementById('tx-category').value || 'Other',
+                    account: document.getElementById('tx-account').value,
+                    amount: parseFloat(document.getElementById('tx-amount').value),
+                    date: document.getElementById('tx-date').value,
+                    description: document.getElementById('tx-desc').value.trim()
+                });
+                document.getElementById('tx-amount').value = '';
+                document.getElementById('tx-desc').value = '';
+                toast(t('saved'));
+            });
+
+            document.getElementById('mob-tx-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const txType = document.getElementById('mob-tx-type').value;
+                toggleModal('mobile-add-modal', false);
+                createTransaction({
+                    type: txType,
+                    category: document.getElementById('mob-tx-category').value || 'Other',
+                    account: document.getElementById('mob-tx-account').value,
+                    amount: parseFloat(document.getElementById('mob-tx-amount').value),
+                    date: document.getElementById('mob-tx-date').value,
+                    description: document.getElementById('mob-tx-desc').value.trim()
+                });
+                document.getElementById('mob-tx-amount').value = '';
+                document.getElementById('mob-tx-desc').value = '';
+                toast(t('saved'));
+            });
+
+            document.getElementById('transfer-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const fromAcc = document.getElementById('tr-from').value;
+                const toAcc = document.getElementById('tr-to').value;
+                const amt = parseFloat(document.getElementById('tr-amount').value);
+                if (fromAcc === toAcc) {
+                    toast("Select two different wallets", true);
+                    return;
+                }
+                toggleModal('transfer-modal', false);
+                createTransaction({
+                    type: 'transfer',
+                    category: 'Transfer',
+                    fromAccount: fromAcc,
+                    toAccount: toAcc,
+                    account: `${fromAcc} → ${toAcc}`,
+                    amount: amt,
+                    date: document.getElementById('tr-date').value,
+                    description: `${fromAcc} → ${toAcc}`
+                });
+                document.getElementById('tr-amount').value = '';
+                toast(t('saved'));
+            });
+
+            document.getElementById('search-tx').addEventListener('input', renderRecentAndFullLists);
+            document.getElementById('filter-type').addEventListener('change', renderRecentAndFullLists);
+            document.getElementById('filter-category').addEventListener('change', renderRecentAndFullLists);
+
+            document.getElementById('btn-sample-csv').addEventListener('click', () => {
+                const today = toLocalISO(new Date());
+                const sample = [
+                    "Date,Type,Account,Category,Description,Amount",
+                    `${today},Income,HSBC / Bank,Salary,Monthly Salary,45000`,
+                    `${today},Outcome,Octopus,Transport,MTR Commute,28.50`,
+                    `${today},Outcome,PayMe / FPS,Dining,Central Lunch,72.00`
+                ].join('\n');
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(new Blob([sample], { type: 'text/csv' }));
+                a.download = `HKFin_template.csv`;
+                a.click();
+            });
+
+            document.getElementById('btn-export-csv').addEventListener('click', () => {
+                if (!transactions.length) return;
+                const lines = ["Date,Type,Account,Category,Description,Amount"];
+                transactions.forEach(t => lines.push(`${t.date},${t.type === 'income' ? 'Income' : t.type === 'transfer' ? 'Transfer' : 'Outcome'},"${t.account || ''}","${t.category || 'Other'}","${(t.description || '').replace(/"/g, '""')}",${t.amount}`));
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' }));
+                a.download = `HKFin_export_${toLocalISO(new Date())}.csv`;
+                a.click();
+            });
+
+            document.getElementById('csv-import-input').addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file || !currentUser) return;
+                showLoader(t('loading_csv'));
+                let imported = 0;
+                try {
+                    const text = await file.text();
+                    const rows = text.split(/\r?\n/).slice(1).filter(Boolean);
+                    const colRef = collection(db, 'users', currentUser.uid, 'transactions');
+                    const today = toLocalISO(new Date());
+
+                    for (let i = 0; i < rows.length; i += 450) {
+                        const batch = writeBatch(db);
+                        const chunk = rows.slice(i, i + 450);
+                        for (const row of chunk) {
+                            const cols = row.split(',').map(c => c.replace(/^"|"$/g, '').trim());
+                            const amt = parseFloat(cols[cols.length - 1]);
+                            if (!isNaN(amt) && amt > 0) {
+                                const isInc = (cols[1] || '').toLowerCase() === 'income';
+                                const desc = cols[cols.length - 2] || 'Imported Entry';
+                                const cat = (cols.length >= 6 && CATEGORIES.some(c => c.val === cols[3])) ? cols[3] : (autoDetectCategory(desc, isInc ? 'income' : 'expense') || 'Other');
+                                const newDoc = doc(colRef);
+                                batch.set(newDoc, {
+                                    date: /^\d{4}-\d{2}-\d{2}$/.test(cols[0]) ? cols[0] : today,
+                                    category: cat,
+                                    type: isInc ? 'income' : 'expense',
+                                    account: cols.length >= 5 ? cols[2] : 'HSBC / Bank',
+                                    description: desc,
+                                    amount: amt,
+                                    createdMs: Date.now() + imported,
+                                    createdAt: serverTimestamp()
+                                });
+                                imported++;
+                            }
+                        }
+                        await batch.commit();
+                    }
+                    toast(`+${imported}`);
+                } catch (err) {
+                    toast(err.message, true);
+                } finally {
+                    hideLoader();
+                    e.target.value = '';
+                }
+            });
+
+            document.getElementById('goals-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveSettings({
+                    incomePeriod: document.getElementById('input-income-period').value || 'monthly',
+                    incomeTarget: parseFloat(document.getElementById('input-income-target').value) || 0,
+                    budgetPeriod: document.getElementById('input-budget-period').value || 'monthly',
+                    monthlyBudget: parseFloat(document.getElementById('input-monthly-budget').value) || 0,
+                    goalName: document.getElementById('input-goal-name').value.trim() || 'Savings Goal',
+                    goalTarget: parseFloat(document.getElementById('input-goal-target').value) || 0
+                });
+            });
+
+            document.getElementById('recurring-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (!currentUser) return;
+                bumpSync(1);
+                addDoc(collection(db, 'users', currentUser.uid, 'recurring'), {
+                    name: document.getElementById('rec-name').value.trim(),
+                    frequency: document.getElementById('rec-freq').value,
+                    amount: parseFloat(document.getElementById('rec-amount').value)
+                })
+                .catch(err => toast(err.message, true))
+                .finally(() => bumpSync(-1));
+                document.getElementById('rec-name').value = '';
+                document.getElementById('rec-amount').value = '';
+                toast(t('saved'));
+            });
+
+            ['tax-income', 'tax-mpf', 'tax-deductions', 'tax-status'].forEach(id => document.getElementById(id).addEventListener('input', calculateHKTax));
+            ['mpf-current', 'mpf-monthly', 'mpf-return', 'mpf-years'].forEach(id => document.getElementById(id).addEventListener('input', calculateMPF));
+            ['prop-price', 'prop-ltv', 'prop-rate', 'prop-years'].forEach(id => document.getElementById(id).addEventListener('input', calculateProperty));
+            calculateHKTax();
+            calculateMPF();
+            calculateProperty();
+        });
+    </script>
+</body>
+</html>
